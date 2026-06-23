@@ -1,4 +1,4 @@
-﻿# GenLayer Scout Build Log
+# GenLayer Scout Build Log
 
 ## 2026-06-19 - v0.1 implementation
 
@@ -48,10 +48,23 @@
 - Added contribution category and Portal submission notes to the evidence pack.
 - Improved clipboard failure handling and Markdown placeholders.
 
+## 2026-06-23 - v0.1.1 product hardening
+
+### Implemented
+
+- Added edit support for contract experiments using the same form as creation.
+- Added `updatedAt` to experiment records while preserving `createdAt` for existing and edited records.
+- Added copy controls and responsive wrapping for long contract addresses and transaction hashes.
+- Added full-workspace JSON export and validated import with a replacement warning.
+- Added a concise first-use panel on the dashboard.
+- Improved evidence pack generation from a selected contract experiment.
+- Added generated date and a manual-evidence note to Markdown output.
+- Added a browser QA checklist covering the main v0.1.1 flows.
+
 ### Remaining limitations
 
-- Existing experiments cannot yet be edited.
 - Only one evidence pack draft is stored.
-- There is no workspace export/import.
+- Import is a full replacement flow, not a merge flow.
 - Browser storage remains the only persistence layer.
-- No GenLayer or Portal data is queried or verified.
+- No GenLayer Studio, network, or Portal data is queried or verified.
+- v0.2 verifier work depends on confirmed supported GenLayer verification semantics.

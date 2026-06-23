@@ -1,4 +1,8 @@
-﻿# [Contribution title]
+# [Contribution title]
+
+Generated: [YYYY-MM-DD]
+
+> Manual evidence note: this report was assembled from local builder records. Addresses, transaction hashes, observed states, screenshots, and links must be verified against the original Studio or project evidence before submission.
 
 ## Contribution category
 
@@ -14,10 +18,12 @@ Explain the specific GenLayer builder workflow, technical question, tooling gap,
 
 ## Contract and deployment evidence
 
+- **Contract experiment:** `[Name of the local experiment record]`
 - **Studio contract file:** `contract.py`
 - **Deployed contract address:** `Not recorded` or the exact observed address
 - **Transaction hash:** `Not recorded` or the exact observed hash
 - **Observed transaction state:** drafted, deployed, accepted, consensus, finalized, or failed
+- **Experiment recorded:** `[Date]`
 
 Do not infer a state that was not directly observed.
 

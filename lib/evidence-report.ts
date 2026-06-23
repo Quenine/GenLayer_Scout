@@ -1,8 +1,9 @@
-﻿import type {
+import type {
   ContractExperiment,
   ContributionLane,
   EvidencePack
 } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 function valueOrPrompt(value: string, prompt: string) {
   return value.trim() || `_[${prompt}]_`;
@@ -28,8 +29,13 @@ export function buildEvidencePackMarkdown({
   const evidenceList = links.length
     ? links.map((link) => `- ${link}`).join("\n")
     : "- [Add Studio screenshots, transaction output, repository links, or test artifacts]";
+  const generatedAt = new Date().toISOString();
 
   return `# ${valueOrPrompt(evidencePack.title, "Contribution title")}
+
+Generated: ${formatDate(generatedAt)}
+
+> Manual evidence note: this report was assembled from local GenLayer Scout records. Addresses, transaction hashes, observed states, screenshots, and links are not automatically verified by Scout.
 
 ## Contribution category
 ${contributionLane?.name ?? "_[Select a contribution category]_"}
@@ -41,10 +47,12 @@ ${valueOrPrompt(evidencePack.projectSummary, "Describe what was built or investi
 ${valueOrPrompt(evidencePack.genLayerRelevance, "Explain why this is useful to GenLayer builders or contributors")}
 
 ## Contract and deployment evidence
+- **Contract experiment:** ${experiment?.contractName || "Not selected"}
 - **Studio contract file:** ${experiment?.studioFileName || "Not recorded"}
 - **Deployed contract address:** ${experiment?.deployedContractAddress || "Not recorded"}
 - **Transaction hash:** ${experiment?.transactionHash || "Not recorded"}
 - **Observed transaction state:** ${experiment?.status || "Not recorded"}
+- **Experiment recorded:** ${experiment ? formatDate(experiment.createdAt) : "Not recorded"}
 
 ## Screenshots and evidence links
 ${evidenceList}
@@ -62,5 +70,5 @@ ${valueOrPrompt(evidencePack.nextMilestone, "State the next concrete result")}
 ${valueOrPrompt(evidencePack.portalSubmissionNotes, "Add reviewer context, reproduction notes, or scope boundaries")}
 
 ---
-Prepared in GenLayer Scout v0.1 from manually entered records. Verify addresses, hashes, transaction states, and links against the original Studio evidence before submission.`;
+Prepared in GenLayer Scout v0.1.1 from manually entered records. Verify all evidence against the original Studio run and Portal submission requirements before posting.`;
 }

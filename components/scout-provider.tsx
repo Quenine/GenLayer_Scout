@@ -21,11 +21,13 @@ import type {
 interface ScoutContextValue extends ScoutWorkspace {
   storageWarning: string | null;
   addExperiment: (experiment: ContractExperiment) => void;
+  updateExperiment: (experiment: ContractExperiment) => void;
   deleteExperiment: (id: string) => void;
   addBuildLogEntry: (entry: BuildLogEntry) => void;
   deleteBuildLogEntry: (id: string) => void;
   updateContributionLane: (id: string, status: ContributionLaneStatus) => void;
   updateEvidencePack: (evidencePack: EvidencePack) => void;
+  replaceWorkspace: (workspace: ScoutWorkspace) => void;
   resetWorkspace: () => void;
 }
 
@@ -72,6 +74,15 @@ export function ScoutProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const updateExperiment = useCallback((experiment: ContractExperiment) => {
+    setWorkspace((current) => ({
+      ...current,
+      experiments: current.experiments.map((existing) =>
+        existing.id === experiment.id ? experiment : existing
+      )
+    }));
+  }, []);
+
   const deleteExperiment = useCallback((id: string) => {
     setWorkspace((current) => ({
       ...current,
@@ -115,6 +126,11 @@ export function ScoutProvider({ children }: { children: React.ReactNode }) {
     setWorkspace((current) => ({ ...current, evidencePack }));
   }, []);
 
+  const replaceWorkspace = useCallback((nextWorkspace: ScoutWorkspace) => {
+    setWorkspace(nextWorkspace);
+    setStorageWarning(null);
+  }, []);
+
   const resetWorkspace = useCallback(() => {
     setWorkspace(createEmptyWorkspace());
     setStorageWarning(null);
@@ -125,22 +141,26 @@ export function ScoutProvider({ children }: { children: React.ReactNode }) {
       ...workspace,
       storageWarning,
       addExperiment,
+      updateExperiment,
       deleteExperiment,
       addBuildLogEntry,
       deleteBuildLogEntry,
       updateContributionLane,
       updateEvidencePack,
+      replaceWorkspace,
       resetWorkspace
     }),
     [
       workspace,
       storageWarning,
       addExperiment,
+      updateExperiment,
       deleteExperiment,
       addBuildLogEntry,
       deleteBuildLogEntry,
       updateContributionLane,
       updateEvidencePack,
+      replaceWorkspace,
       resetWorkspace
     ]
   );

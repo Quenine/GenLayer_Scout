@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type {
   ContractExperiment,
@@ -21,12 +21,23 @@ export function EvidencePackForm({
     onChange({ ...evidencePack, [key]: value });
   }
 
+  function selectExperiment(experimentId: string) {
+    const experiment = experiments.find((item) => item.id === experimentId);
+    onChange({
+      ...evidencePack,
+      experimentId,
+      title: evidencePack.title || experiment?.contractName || "",
+      portalSubmissionNotes:
+        evidencePack.portalSubmissionNotes || experiment?.portalSubmissionNotes || ""
+    });
+  }
+
   return (
     <section className="card overflow-hidden">
       <div className="border-b border-line px-5 py-4">
         <h2 className="text-sm font-semibold">Evidence pack fields</h2>
         <p className="mt-0.5 text-xs text-slate-500">
-          The current draft is saved in this browser.
+          The current draft is saved in this browser. Selecting an experiment pulls its deployment evidence into the Markdown preview.
         </p>
       </div>
       <div className="space-y-5 p-5">
@@ -55,11 +66,11 @@ export function EvidencePackForm({
           </select>
         </label>
         <label>
-          <span className="label">Contract experiment</span>
+          <span className="label">Generate from contract experiment</span>
           <select
             className="field"
             value={evidencePack.experimentId}
-            onChange={(event) => update("experimentId", event.target.value)}
+            onChange={(event) => selectExperiment(event.target.value)}
           >
             <option value="">No contract experiment selected</option>
             {experiments.map((experiment) => (

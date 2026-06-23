@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Check, Clipboard, Download, FileText } from "lucide-react";
 import { useState } from "react";
@@ -47,10 +47,10 @@ export function EvidencePackPreview({
         <div className="flex gap-2">
           <button className="btn-secondary !px-3 !py-2" onClick={copyReport}>
             {copied ? <Check size={15} /> : <Clipboard size={15} />}
-            {copied ? "Copied" : "Copy"}
+            {copied ? "Copied" : "Copy Markdown"}
           </button>
           <button className="btn-primary !px-3 !py-2" onClick={downloadReport}>
-            <Download size={15} /> Download .md
+            <Download size={15} /> Download Markdown
           </button>
         </div>
       </div>
@@ -65,3 +65,4 @@ export function EvidencePackPreview({
     </section>
   );
 }
+

@@ -120,7 +120,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="hidden items-center gap-2 text-xs text-slate-500 lg:flex">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            v0.1 - manual local data
+            v0.1.1 - manual local data
           </div>
           <div className="ml-auto rounded-full border border-line bg-white px-3 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-slate-500">
             No live API
@@ -133,3 +133,4 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+

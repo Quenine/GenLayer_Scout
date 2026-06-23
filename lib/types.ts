@@ -1,4 +1,4 @@
-﻿export const EXPERIMENT_STATUSES = [
+export const EXPERIMENT_STATUSES = [
   "drafted",
   "deployed",
   "accepted",
@@ -39,6 +39,7 @@ export interface ContractExperiment {
   evidenceUrl: string;
   portalSubmissionNotes: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface ContributionCategory {
@@ -87,4 +88,11 @@ export interface ScoutWorkspace {
   contributionLanes: ContributionLane[];
   buildLogEntries: BuildLogEntry[];
   evidencePack: EvidencePack;
+}
+
+export interface ScoutBackupFile {
+  app: "GenLayer Scout";
+  exportedAt: string;
+  schemaVersion: ScoutWorkspace["schemaVersion"];
+  workspace: ScoutWorkspace;
 }

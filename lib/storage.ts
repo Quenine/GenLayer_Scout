@@ -1,4 +1,4 @@
-﻿import { createEmptyWorkspace } from "@/lib/seed-data";
+import { createEmptyWorkspace } from "@/lib/seed-data";
 import {
   BUILD_LOG_ENTRY_TYPES,
   CONTRIBUTION_LANE_STATUSES,
@@ -7,6 +7,7 @@ import {
   type ContractExperiment,
   type ContributionLane,
   type EvidencePack,
+  type ScoutBackupFile,
   type ScoutWorkspace
 } from "@/lib/types";
 
@@ -26,20 +27,49 @@ function stringField(record: UnknownRecord, key: string) {
   return isString(record[key]) ? record[key] : "";
 }
 
-function isContractExperiment(value: unknown): value is ContractExperiment {
-  if (!isRecord(value)) return false;
-  return (
-    isString(value.id) &&
-    isString(value.contractName) &&
-    isString(value.studioFileName) &&
-    isString(value.deployedContractAddress) &&
-    isString(value.transactionHash) &&
-    EXPERIMENT_STATUSES.includes(value.status as ContractExperiment["status"]) &&
-    isString(value.experimentNotes) &&
-    isString(value.evidenceUrl) &&
-    isString(value.portalSubmissionNotes) &&
-    isString(value.createdAt)
-  );
+function normalizeContractExperiment(value: unknown): ContractExperiment | null {
+  if (!isRecord(value)) return null;
+  const status = value.status;
+  const createdAt = stringField(value, "createdAt");
+  const updatedAt = stringField(value, "updatedAt") || createdAt;
+
+  if (
+    !isString(value.id) ||
+    !isString(value.contractName) ||
+    !isString(value.studioFileName) ||
+    !isString(value.deployedContractAddress) ||
+    !isString(value.transactionHash) ||
+    !isString(status) ||
+    !EXPERIMENT_STATUSES.includes(status as ContractExperiment["status"]) ||
+    !isString(value.experimentNotes) ||
+    !isString(value.evidenceUrl) ||
+    !isString(value.portalSubmissionNotes) ||
+    !createdAt
+  ) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    contractName: value.contractName,
+    studioFileName: value.studioFileName,
+    deployedContractAddress: value.deployedContractAddress,
+    transactionHash: value.transactionHash,
+    status: status as ContractExperiment["status"],
+    experimentNotes: value.experimentNotes,
+    evidenceUrl: value.evidenceUrl,
+    portalSubmissionNotes: value.portalSubmissionNotes,
+    createdAt,
+    updatedAt
+  };
+}
+
+function normalizeArray<T>(values: unknown, normalize: (value: unknown) => T | null) {
+  if (!Array.isArray(values)) return null;
+  const normalized = values.map(normalize);
+  return normalized.every((value): value is T => value !== null)
+    ? normalized
+    : null;
 }
 
 function isContributionLane(value: unknown): value is ContributionLane {
@@ -81,18 +111,42 @@ function isEvidencePack(value: unknown): value is EvidencePack {
   ].every((key) => isString(value[key]));
 }
 
-export function isScoutWorkspace(value: unknown): value is ScoutWorkspace {
-  if (!isRecord(value)) return false;
-  return (
-    value.schemaVersion === 1 &&
-    Array.isArray(value.experiments) &&
-    value.experiments.every(isContractExperiment) &&
-    Array.isArray(value.contributionLanes) &&
-    value.contributionLanes.every(isContributionLane) &&
-    Array.isArray(value.buildLogEntries) &&
-    value.buildLogEntries.every(isBuildLogEntry) &&
-    isEvidencePack(value.evidencePack)
+function normalizeScoutWorkspace(value: unknown): ScoutWorkspace | null {
+  if (!isRecord(value) || value.schemaVersion !== 1) return null;
+
+  const experiments = normalizeArray(
+    value.experiments,
+    normalizeContractExperiment
   );
+  const contributionLanes = normalizeArray(
+    value.contributionLanes,
+    (lane) => (isContributionLane(lane) ? lane : null)
+  );
+  const buildLogEntries = normalizeArray(
+    value.buildLogEntries,
+    (entry) => (isBuildLogEntry(entry) ? entry : null)
+  );
+
+  if (
+    !experiments ||
+    !contributionLanes ||
+    !buildLogEntries ||
+    !isEvidencePack(value.evidencePack)
+  ) {
+    return null;
+  }
+
+  return {
+    schemaVersion: 1,
+    experiments,
+    contributionLanes,
+    buildLogEntries,
+    evidencePack: value.evidencePack
+  };
+}
+
+export function isScoutWorkspace(value: unknown): value is ScoutWorkspace {
+  return normalizeScoutWorkspace(value) !== null;
 }
 
 function migrateLegacyWorkspace(value: unknown): ScoutWorkspace | null {
@@ -105,6 +159,7 @@ function migrateLegacyWorkspace(value: unknown): ScoutWorkspace | null {
       .filter((run) => !stringField(run, "id").startsWith("run-demo-"))
       .flatMap((run): ContractExperiment[] => {
         const status = run.status;
+        const createdAt = stringField(run, "createdAt") || new Date().toISOString();
         if (
           !isString(status) ||
           !EXPERIMENT_STATUSES.includes(status as ContractExperiment["status"])
@@ -121,7 +176,8 @@ function migrateLegacyWorkspace(value: unknown): ScoutWorkspace | null {
           experimentNotes: stringField(run, "notes"),
           evidenceUrl: stringField(run, "evidenceUrl"),
           portalSubmissionNotes: "",
-          createdAt: stringField(run, "createdAt")
+          createdAt,
+          updatedAt: createdAt
         }];
       });
   }
@@ -193,8 +249,9 @@ export function loadWorkspace(storage: Storage): {
   if (raw) {
     try {
       const parsed: unknown = JSON.parse(raw);
-      if (isScoutWorkspace(parsed)) {
-        return { workspace: parsed, recoveredFromCorruption: false };
+      const normalized = normalizeScoutWorkspace(parsed);
+      if (normalized) {
+        return { workspace: normalized, recoveredFromCorruption: false };
       }
     } catch {
       // Invalid JSON falls through to clean recovery.
@@ -222,4 +279,38 @@ export function loadWorkspace(storage: Storage): {
 
 export function saveWorkspace(storage: Storage, workspace: ScoutWorkspace) {
   storage.setItem(SCOUT_STORAGE_KEY, JSON.stringify(workspace));
+}
+
+export function createBackupFile(workspace: ScoutWorkspace): ScoutBackupFile {
+  return {
+    app: "GenLayer Scout",
+    exportedAt: new Date().toISOString(),
+    schemaVersion: workspace.schemaVersion,
+    workspace
+  };
+}
+
+export function parseBackupFile(contents: string): {
+  workspace: ScoutWorkspace | null;
+  error: string | null;
+} {
+  try {
+    const parsed: unknown = JSON.parse(contents);
+    const candidate = isRecord(parsed) && parsed.app === "GenLayer Scout"
+      ? parsed.workspace
+      : parsed;
+    const workspace = normalizeScoutWorkspace(candidate);
+    if (!workspace) {
+      return {
+        workspace: null,
+        error: "This file is not a valid GenLayer Scout v0.1.1 workspace backup."
+      };
+    }
+    return { workspace, error: null };
+  } catch {
+    return {
+      workspace: null,
+      error: "Scout could not parse this JSON file. Export a fresh backup and try again."
+    };
+  }
 }

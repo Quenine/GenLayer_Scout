@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import {
@@ -9,14 +9,16 @@ import {
   Plus,
   Target
 } from "lucide-react";
+import { DataBackupPanel } from "@/components/data-backup-panel";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { useScout } from "@/components/scout-provider";
+import { CopyableValue } from "@/components/shared/copyable-value";
 import { StatusBadge } from "@/components/status-badge";
 import { StorageWarning } from "@/components/storage-warning";
 import { SummaryCard } from "@/components/dashboard/summary-card";
 import { calculateDashboardSummary } from "@/lib/dashboard";
-import { formatDate, formatPoints, shorten } from "@/lib/utils";
+import { formatDate, formatPoints } from "@/lib/utils";
 
 export default function DashboardPage() {
   const {
@@ -76,6 +78,21 @@ export default function DashboardPage() {
 
       {storageWarning && <StorageWarning message={storageWarning} />}
 
+      <section className="card mb-6 border-moss-200 bg-moss-50/60 p-5">
+        <h2 className="text-sm font-semibold text-ink">First-use notes</h2>
+        <div className="mt-3 grid gap-3 text-sm leading-6 text-slate-700 md:grid-cols-3">
+          <p>
+            <span className="font-semibold text-ink">Local-first:</span> records stay in this browser until you export, import, or reset them.
+          </p>
+          <p>
+            <span className="font-semibold text-ink">Manual tracking:</span> copy contract files, addresses, hashes, states, and evidence from Studio runs.
+          </p>
+          <p>
+            <span className="font-semibold text-ink">Portal prep:</span> use Scout to keep contribution notes and generate cleaner submission Markdown.
+          </p>
+        </div>
+      </section>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map((card) => <SummaryCard key={card.label} {...card} />)}
       </div>
@@ -101,12 +118,12 @@ export default function DashboardPage() {
                       <StatusBadge status={experiment.status} />
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-slate-500">
-                      <span>{experiment.studioFileName}</span>
+                      <span className="break-all">{experiment.studioFileName}</span>
                       <span>{formatDate(experiment.createdAt)}</span>
                     </div>
                   </div>
-                  <div className="text-left sm:text-right">
-                    <p className="font-mono text-[11px] text-slate-600">{shorten(experiment.transactionHash)}</p>
+                  <div className="min-w-0 text-left sm:max-w-56 sm:text-right">
+                    <CopyableValue label="transaction hash" value={experiment.transactionHash} />
                     <p className={`mt-1 text-[11px] font-medium ${experiment.evidenceUrl ? "text-emerald-700" : "text-amber-700"}`}>
                       {experiment.evidenceUrl ? "Evidence link attached" : "Evidence link not attached"}
                     </p>
@@ -187,6 +204,8 @@ export default function DashboardPage() {
           />
         )}
       </section>
+
+      <DataBackupPanel />
 
       <div className="mt-6 flex flex-col gap-3 rounded-lg border border-line bg-white p-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
         <p>All workspace data is manually entered and stored only in this browser.</p>

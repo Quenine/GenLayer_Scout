@@ -1,6 +1,6 @@
-﻿# GenLayer Scout Roadmap
+# GenLayer Scout Roadmap
 
-The roadmap favors local workflow reliability before external integration.
+The roadmap favors local workflow reliability before external integration. Scout should remain useful even when every value is manually entered.
 
 ## v0.1 - Local builder record
 
@@ -11,22 +11,41 @@ The roadmap favors local workflow reliability before external integration.
 - Versioned browser local-storage persistence
 - Corrupted-storage recovery and workspace reset
 
-## v0.2 - Complete the local workflow
+## v0.1.1 - Product hardening
 
-- Edit existing contract experiments
+- Edit existing contract experiments while preserving `createdAt` and updating `updatedAt`
+- Copy controls for deployed contract addresses and transaction hashes
+- Long address/hash wrapping for desktop and mobile layouts
+- Single full-workspace JSON export/import with runtime validation
+- Evidence pack generation from a selected contract experiment
+- Copy Markdown and download Markdown actions
+- Generated date and manual-evidence note in the Markdown report
+- First-use panel explaining the local-first workflow
+- Browser QA checklist for the main v0.1.1 flows
+
+## v0.2 - GenLayer Intelligent Contract verifier
+
+Goal: help builders check manually recorded Intelligent Contract evidence without pretending Scout has Portal authority.
+
+Possible scope, pending confirmed interfaces and semantics:
+
+- Read-only verifier for a manually entered contract address and transaction hash
+- Clear result states: verified, not found, unavailable, or manually recorded only
+- Side-by-side display of user-entered values and verifier observations
+- Evidence completeness checks that do not estimate Portal points or review outcomes
+- Exportable verifier notes inside evidence packs
+
+Do not start this work until an official supported source for verification is confirmed.
+
+## Later local workflow improvements
+
 - Save multiple named evidence packs
-- Export and import the complete workspace as JSON
-- Evidence completeness checks without claiming external verification
 - Link build log entries to experiments and evidence packs
-- Improve keyboard navigation and complete an accessibility review
-
-## v0.3 - Reproducible evidence
-
 - Structured test case records with input, expected result, observed result, and evidence link
 - Milestone snapshots and diffs
 - Benchmark result collections
 - Reusable evidence templates by contribution category
-- Optional checksums for exported evidence files
+- Improve keyboard navigation and complete an accessibility review
 
 ## Future integration criteria
 

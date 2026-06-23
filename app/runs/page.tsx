@@ -7,16 +7,22 @@ import { ExperimentList } from "@/components/experiments/experiment-list";
 import { PageHeader } from "@/components/page-header";
 import { StorageWarning } from "@/components/storage-warning";
 import { useScout } from "@/components/scout-provider";
-import { EXPERIMENT_STATUSES, type ExperimentStatus } from "@/lib/types";
+import {
+  EXPERIMENT_STATUSES,
+  type ContractExperiment,
+  type ExperimentStatus
+} from "@/lib/types";
 
 export default function ExperimentsPage() {
   const {
     experiments,
     addExperiment,
+    updateExperiment,
     deleteExperiment,
     storageWarning
   } = useScout();
   const [showForm, setShowForm] = useState(false);
+  const [editingExperiment, setEditingExperiment] = useState<ContractExperiment | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ExperimentStatus | "all">(
     "all"
@@ -42,6 +48,22 @@ export default function ExperimentsPage() {
 
   const hasFilters = Boolean(search.trim()) || statusFilter !== "all";
 
+  function openCreateForm() {
+    setEditingExperiment(null);
+    setShowForm(true);
+  }
+
+  function openEditForm(experiment: ContractExperiment) {
+    setEditingExperiment(experiment);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeForm() {
+    setEditingExperiment(null);
+    setShowForm(false);
+  }
+
   return (
     <>
       <PageHeader
@@ -49,7 +71,7 @@ export default function ExperimentsPage() {
         title="Contract experiments"
         description="Record each Studio contract file, deployment result, observed transaction state, and supporting evidence. Scout does not verify these values against GenLayer."
         action={
-          <button className="btn-primary" onClick={() => setShowForm(true)}>
+          <button className="btn-primary" onClick={openCreateForm}>
             <Plus size={16} />
             Record experiment
           </button>
@@ -60,11 +82,16 @@ export default function ExperimentsPage() {
 
       {showForm && (
         <ExperimentForm
+          initialExperiment={editingExperiment}
           onSave={(experiment) => {
-            addExperiment(experiment);
-            setShowForm(false);
+            if (editingExperiment) {
+              updateExperiment(experiment);
+            } else {
+              addExperiment(experiment);
+            }
+            closeForm();
           }}
-          onCancel={() => setShowForm(false)}
+          onCancel={closeForm}
         />
       )}
 
@@ -109,12 +136,16 @@ export default function ExperimentsPage() {
         <ExperimentList
           experiments={filteredExperiments}
           hasFilters={hasFilters}
+          onEdit={openEditForm}
           onDelete={(id) => {
-            if (window.confirm("Delete this experiment record from the local workspace?")) {
+            if (window.confirm("Delete this experiment record from the local workspace? This also unlinks it from the current evidence draft.")) {
               deleteExperiment(id);
+              if (editingExperiment?.id === id) {
+                closeForm();
+              }
             }
           }}
-          onCreate={() => setShowForm(true)}
+          onCreate={openCreateForm}
         />
       </section>
     </>

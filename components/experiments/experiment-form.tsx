@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EXPERIMENT_STATUSES, type ContractExperiment } from "@/lib/types";
 import { makeId } from "@/lib/utils";
 
@@ -27,19 +27,45 @@ const EMPTY_FORM: ExperimentFormValues = {
   portalSubmissionNotes: ""
 };
 
+function valuesFromExperiment(
+  experiment?: ContractExperiment | null
+): ExperimentFormValues {
+  if (!experiment) return EMPTY_FORM;
+  return {
+    contractName: experiment.contractName,
+    studioFileName: experiment.studioFileName,
+    deployedContractAddress: experiment.deployedContractAddress,
+    transactionHash: experiment.transactionHash,
+    status: experiment.status,
+    experimentNotes: experiment.experimentNotes,
+    evidenceUrl: experiment.evidenceUrl,
+    portalSubmissionNotes: experiment.portalSubmissionNotes
+  };
+}
+
 export function ExperimentForm({
+  initialExperiment,
   onSave,
   onCancel
 }: {
+  initialExperiment?: ContractExperiment | null;
   onSave: (experiment: ContractExperiment) => void;
   onCancel: () => void;
 }) {
-  const [form, setForm] = useState<ExperimentFormValues>(EMPTY_FORM);
+  const [form, setForm] = useState<ExperimentFormValues>(() =>
+    valuesFromExperiment(initialExperiment)
+  );
+  const isEditing = Boolean(initialExperiment);
+
+  useEffect(() => {
+    setForm(valuesFromExperiment(initialExperiment));
+  }, [initialExperiment]);
 
   function submitExperiment(event: React.FormEvent) {
     event.preventDefault();
+    const now = new Date().toISOString();
     onSave({
-      id: makeId("experiment"),
+      id: initialExperiment?.id ?? makeId("experiment"),
       ...form,
       contractName: form.contractName.trim(),
       studioFileName: form.studioFileName.trim(),
@@ -48,7 +74,8 @@ export function ExperimentForm({
       experimentNotes: form.experimentNotes.trim(),
       evidenceUrl: form.evidenceUrl.trim(),
       portalSubmissionNotes: form.portalSubmissionNotes.trim(),
-      createdAt: new Date().toISOString()
+      createdAt: initialExperiment?.createdAt ?? now,
+      updatedAt: isEditing ? now : now
     });
   }
 
@@ -56,7 +83,9 @@ export function ExperimentForm({
     <section className="card mb-6">
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold">Record a contract experiment</h2>
+          <h2 className="text-sm font-semibold">
+            {isEditing ? "Edit contract experiment" : "Record a contract experiment"}
+          </h2>
           <p className="mt-0.5 text-xs text-slate-500">
             Copy these values from the Studio session or its saved evidence.
           </p>
@@ -175,7 +204,7 @@ export function ExperimentForm({
             Cancel
           </button>
           <button type="submit" className="btn-primary">
-            Save experiment
+            {isEditing ? "Save changes" : "Save experiment"}
           </button>
         </div>
       </form>
