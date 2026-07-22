@@ -18,6 +18,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { StorageWarning } from "@/components/storage-warning";
 import { SummaryCard } from "@/components/dashboard/summary-card";
 import { calculateDashboardSummary } from "@/lib/dashboard";
+import { ACTIVE_CONTRIBUTION_LANE_STATUSES } from "@/lib/types";
 import { formatDate, formatPoints } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -30,7 +31,9 @@ export default function DashboardPage() {
   } = useScout();
   const summary = calculateDashboardSummary(experiments, contributionLanes);
   const activeLanes = contributionLanes
-    .filter((lane) => lane.status !== "watching")
+    .filter((lane) =>
+      (ACTIVE_CONTRIBUTION_LANE_STATUSES as readonly string[]).includes(lane.status)
+    )
     .slice(0, 4);
   const summaryCards = [
     {
@@ -43,7 +46,7 @@ export default function DashboardPage() {
     {
       label: "Finalized transactions",
       value: summary.finalizedTransactions,
-      detail: "Marked finalized by the builder",
+      detail: "Only records exactly marked finalized",
       icon: CheckCircle2,
       iconClassName: "bg-emerald-50 text-emerald-700"
     },
@@ -144,7 +147,7 @@ export default function DashboardPage() {
         <section className="card overflow-hidden">
           <div className="border-b border-line px-5 py-4">
             <h2 className="text-sm font-semibold">Active contribution lanes</h2>
-            <p className="mt-0.5 text-xs text-slate-500">Categories marked exploring, building, or submitted</p>
+            <p className="mt-0.5 text-xs text-slate-500">Categories marked building, submitted, or accepted</p>
           </div>
           {activeLanes.length ? (
             <div className="divide-y divide-line">
@@ -164,7 +167,7 @@ export default function DashboardPage() {
             <EmptyState
               icon={Target}
               title="No active lanes marked"
-              description="Use planning states to record which Portal contribution categories you are considering."
+              description="Mark lanes as building, submitted, or accepted when they are part of your current Portal submission work."
             />
           )}
           <Link href="/opportunities" className="flex items-center justify-center gap-2 border-t border-line px-5 py-3.5 text-xs font-semibold text-moss-700 hover:bg-moss-50">

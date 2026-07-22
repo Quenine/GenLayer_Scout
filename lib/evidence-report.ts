@@ -30,6 +30,9 @@ export function buildEvidencePackMarkdown({
     ? links.map((link) => `- ${link}`).join("\n")
     : "- [Add Studio screenshots, transaction output, repository links, or test artifacts]";
   const generatedAt = new Date().toISOString();
+  const noExperimentNote = experiment
+    ? ""
+    : "No experiment selected. This evidence pack does not include Studio deployment details.\n";
 
   return `# ${valueOrPrompt(evidencePack.title, "Contribution title")}
 
@@ -47,10 +50,10 @@ ${valueOrPrompt(evidencePack.projectSummary, "Describe what was built or investi
 ${valueOrPrompt(evidencePack.genLayerRelevance, "Explain why this is useful to GenLayer builders or contributors")}
 
 ## Contract and deployment evidence
-- **Contract experiment:** ${experiment?.contractName || "Not selected"}
+${noExperimentNote}- **Contract experiment:** ${experiment?.contractName || "Not selected"}
 - **Studio contract file:** ${experiment?.studioFileName || "Not recorded"}
-- **Deployed contract address:** ${experiment?.deployedContractAddress || "Not recorded"}
-- **Transaction hash:** ${experiment?.transactionHash || "Not recorded"}
+- **Deployed contract address:** ${experiment?.deployedContractAddress || evidencePack.contractAddressNotApplicableReason || "Not recorded"}
+- **Transaction hash:** ${experiment?.transactionHash || evidencePack.transactionHashNotApplicableReason || "Not recorded"}
 - **Observed transaction state:** ${experiment?.status || "Not recorded"}
 - **Experiment recorded:** ${experiment ? formatDate(experiment.createdAt) : "Not recorded"}
 

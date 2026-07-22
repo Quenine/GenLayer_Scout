@@ -18,14 +18,14 @@ Explain the specific GenLayer builder workflow, technical question, tooling gap,
 
 ## Contract and deployment evidence
 
-- **Contract experiment:** `[Name of the local experiment record]`
-- **Studio contract file:** `contract.py`
-- **Deployed contract address:** `Not recorded` or the exact observed address
-- **Transaction hash:** `Not recorded` or the exact observed hash
-- **Observed transaction state:** drafted, deployed, accepted, consensus, finalized, or failed
-- **Experiment recorded:** `[Date]`
+- **Contract experiment:** `[Name of the local experiment record]` or `Not selected`
+- **Studio contract file:** `contract.py` or `Not recorded`
+- **Deployed contract address:** the exact observed address, or a clear reason no address applies
+- **Transaction hash:** the exact observed hash, or a clear reason no hash applies
+- **Observed transaction state:** drafted, deployed, accepted, consensus, finalized, failed, or `Not recorded`
+- **Experiment recorded:** `[Date]` or `Not recorded`
 
-Do not infer a state that was not directly observed.
+Do not infer a state that was not directly observed. If no experiment is selected, state that the pack does not include Studio deployment details.
 
 ## Screenshots and evidence links
 
@@ -48,6 +48,10 @@ Name the next concrete result and the evidence that would demonstrate it.
 ## Portal submission notes
 
 Add reviewer context, reproduction steps, dependency versions, related submissions, and scope boundaries.
+
+## Readiness and quality guard
+
+Before submission, confirm the Scout readiness checklist is Ready or that each Needs evidence item has an intentional explanation. Rewrite fields that contain weak placeholder terms such as `test`, `testing`, `none`, `win`, `winner`, `lorem`, `placeholder`, or `demo only`.
 
 ---
 

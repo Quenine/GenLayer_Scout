@@ -1,0 +1,95 @@
+﻿"use client";
+
+import { AlertTriangle, CheckCircle2, Circle, Info } from "lucide-react";
+import type { ContractExperiment, ContributionLane, EvidencePack } from "@/lib/types";
+import {
+  evaluateEvidenceReadiness,
+  findEvidenceQualityWarnings
+} from "@/lib/evidence-quality";
+import { cn } from "@/lib/utils";
+
+const STATUS_STYLE = {
+  Ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
+  "Needs evidence": "border-amber-200 bg-amber-50 text-amber-800",
+  Incomplete: "border-rose-200 bg-rose-50 text-rose-800"
+};
+
+export function EvidenceReadinessChecklist({
+  evidencePack,
+  experiment,
+  contributionLane
+}: {
+  evidencePack: EvidencePack;
+  experiment?: ContractExperiment;
+  contributionLane?: ContributionLane;
+}) {
+  const readiness = evaluateEvidenceReadiness({
+    evidencePack,
+    experiment,
+    contributionLane
+  });
+  const warnings = findEvidenceQualityWarnings(evidencePack);
+
+  return (
+    <section className="card overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+        <div>
+          <h2 className="text-sm font-semibold">Submission readiness</h2>
+          <p className="mt-0.5 text-xs text-slate-500">
+            A local checklist for steward-reviewed submission preparation. It does not verify network data.
+          </p>
+        </div>
+        <span className={cn("rounded-full border px-3 py-1 text-xs font-semibold", STATUS_STYLE[readiness.status])}>
+          {readiness.status}
+        </span>
+      </div>
+
+      <div className="divide-y divide-line">
+        {readiness.items.map((item) => (
+          <div key={item.label} className="flex gap-3 px-5 py-3">
+            {item.complete ? (
+              <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-600" size={16} />
+            ) : (
+              <Circle className="mt-0.5 shrink-0 text-slate-300" size={16} />
+            )}
+            <div>
+              <p className="text-sm font-medium text-ink">{item.label}</p>
+              {!item.complete && (
+                <p className="mt-0.5 text-xs leading-5 text-slate-500">{item.detail}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {warnings.length > 0 && (
+        <div className="border-t border-amber-200 bg-amber-50 px-5 py-4">
+          <div className="flex gap-3">
+            <AlertTriangle className="mt-0.5 shrink-0 text-amber-700" size={17} />
+            <div>
+              <p className="text-sm font-semibold text-amber-900">Quality guard</p>
+              <p className="mt-1 text-xs leading-5 text-amber-900">
+                These fields may be too vague for a steward-reviewed submission. The warning is non-blocking.
+              </p>
+              <ul className="mt-2 space-y-1 text-xs text-amber-900">
+                {warnings.map((warning) => (
+                  <li key={`${warning.field}-${warning.term}`}>
+                    {warning.field}: contains weak placeholder term: {warning.term}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-3 border-t border-line bg-slate-50 px-5 py-3 text-xs leading-5 text-slate-600">
+        <Info size={15} className="mt-0.5 shrink-0" />
+        <p>
+          Treat Ready as locally complete enough to review, not as Portal acceptance, eligibility, or verified transaction status.
+        </p>
+      </div>
+    </section>
+  );
+}
+

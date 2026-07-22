@@ -1,4 +1,4 @@
-# Browser QA Checklist
+﻿# Browser QA Checklist
 
 Use this checklist before tagging or submitting a v0.1.1 build. These steps assume no live GenLayer API integration; every value is manually entered.
 
@@ -37,8 +37,23 @@ Use this checklist before tagging or submitting a v0.1.1 build. These steps assu
 - [ ] Open Evidence pack.
 - [ ] Select a contribution category.
 - [ ] Select a contract experiment.
+- [ ] Confirm the UI says contract name, file, address, hash, state, recorded date, and evidence URL are included in Markdown.
 - [ ] Confirm the Markdown includes title, generated date, manual-evidence note, category, contract file, address, hash, state, evidence links, tested scope, limitations, next milestone, and Portal notes.
-- [ ] Confirm placeholder prompts are obvious when fields are missing.
+- [ ] Clear the experiment selection and confirm the UI says no Studio deployment details will be included.
+- [ ] Add not-applicable reasons for address/hash and confirm the readiness checklist updates.
+
+## Submission readiness checklist
+
+- [ ] Empty narrative fields should show Incomplete.
+- [ ] Complete narrative fields with missing deployment/evidence should show Needs evidence.
+- [ ] Complete narrative fields plus selected evidence or N/A reasons should show Ready.
+- [ ] Confirm Ready is worded as local completeness, not Portal acceptance or verification.
+
+## Placeholder quality guard
+
+- [ ] Enter weak values such as `test`, `none`, `lorem`, `placeholder`, or `demo only` in evidence fields.
+- [ ] Confirm non-blocking warnings appear.
+- [ ] Replace weak text with specific evidence and confirm warnings clear.
 
 ## Copy/download markdown
 
@@ -60,6 +75,18 @@ Use this checklist before tagging or submitting a v0.1.1 build. These steps assu
 - [ ] Use the dashboard reset action.
 - [ ] Cancel once and confirm data remains.
 - [ ] Reset again and confirm experiments, evidence draft, build notes, and lane states are cleared/restored appropriately.
+
+## Contribution lanes
+
+- [ ] Confirm statuses are Watching, Building, Submitted, Accepted, and Deferred.
+- [ ] Mark lanes Building, Submitted, and Accepted and confirm they appear as active on the dashboard.
+- [ ] Mark lanes Watching or Deferred and confirm they do not appear as active on the dashboard.
+
+## Build log empty state
+
+- [ ] Reset storage or clear build log entries.
+- [ ] Confirm suggested first entries are shown as prompts only.
+- [ ] Confirm no suggested entry is automatically created.
 
 ## Mobile viewport check
 

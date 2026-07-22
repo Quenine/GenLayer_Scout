@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { Info } from "lucide-react";
 import { EvidencePackForm } from "@/components/evidence/evidence-pack-form";
 import { EvidencePackPreview } from "@/components/evidence/evidence-pack-preview";
+import { EvidenceReadinessChecklist } from "@/components/evidence/evidence-readiness-checklist";
 import { PageHeader } from "@/components/page-header";
 import { useScout } from "@/components/scout-provider";
 import { buildEvidencePackMarkdown } from "@/lib/evidence-report";
@@ -47,12 +48,19 @@ export default function EvidencePage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <EvidencePackForm
-          evidencePack={evidencePack}
-          experiments={experiments}
-          contributionLanes={contributionLanes}
-          onChange={updateEvidencePack}
-        />
+        <div className="space-y-6">
+          <EvidenceReadinessChecklist
+            evidencePack={evidencePack}
+            experiment={selectedExperiment}
+            contributionLane={selectedContributionLane}
+          />
+          <EvidencePackForm
+            evidencePack={evidencePack}
+            experiments={experiments}
+            contributionLanes={contributionLanes}
+            onChange={updateEvidencePack}
+          />
+        </div>
         <EvidencePackPreview markdown={markdown} fileName={fileName} />
       </div>
     </>

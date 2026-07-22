@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ContributionCategory,
   ContributionLane,
   EvidencePack,
@@ -36,6 +36,8 @@ export const EMPTY_EVIDENCE_PACK: EvidencePack = {
   title: "",
   projectSummary: "",
   genLayerRelevance: "",
+  contractAddressNotApplicableReason: "",
+  transactionHashNotApplicableReason: "",
   whatWasTested: "",
   knownLimitations: "",
   nextMilestone: "",

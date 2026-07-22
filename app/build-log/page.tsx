@@ -27,6 +27,13 @@ const ENTRY_TYPE_STYLE = {
   lesson: { icon: BookOpen, color: "bg-blue-50 text-blue-700 border-blue-200" }
 } satisfies Record<BuildLogEntryType, { icon: typeof TrendingUp; color: string }>;
 
+const SUGGESTED_FIRST_ENTRIES = [
+  "First Studio deployment completed",
+  "Learned Studio is a code/deployment environment, not a prompt box",
+  "Created Scout v0.1.1 local-first evidence workflow",
+  "Planned v0.2 Intelligent Contract verifier"
+];
+
 export default function BuildLogPage() {
   const { buildLogEntries, addBuildLogEntry, deleteBuildLogEntry } = useScout();
   const [showForm, setShowForm] = useState(false);
@@ -136,6 +143,23 @@ export default function BuildLogPage() {
               <p className="mt-1 text-xs text-slate-500">
                 {buildLogEntries.length ? "Choose another entry type." : "Add the first dated note from your current build session."}
               </p>
+              {!buildLogEntries.length && (
+                <div className="mx-auto mt-5 max-w-xl text-left">
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">
+                    Suggested first entries
+                  </p>
+                  <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {SUGGESTED_FIRST_ENTRIES.map((suggestion) => (
+                      <li key={suggestion} className="rounded-lg border border-line bg-white px-3 py-2 text-xs text-slate-600">
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    These are prompts only. Add them manually if they match your actual work.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </section>

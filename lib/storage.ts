@@ -1,4 +1,4 @@
-import { createEmptyWorkspace } from "@/lib/seed-data";
+﻿import { createEmptyWorkspace } from "@/lib/seed-data";
 import {
   BUILD_LOG_ENTRY_TYPES,
   CONTRIBUTION_LANE_STATUSES,
@@ -6,6 +6,7 @@ import {
   type BuildLogEntry,
   type ContractExperiment,
   type ContributionLane,
+  type ContributionLaneStatus,
   type EvidencePack,
   type ScoutBackupFile,
   type ScoutWorkspace
@@ -25,6 +26,14 @@ function isString(value: unknown): value is string {
 
 function stringField(record: UnknownRecord, key: string) {
   return isString(record[key]) ? record[key] : "";
+}
+
+function normalizeLaneStatus(value: unknown): ContributionLaneStatus | null {
+  if (!isString(value)) return null;
+  if (value === "exploring") return "building";
+  return CONTRIBUTION_LANE_STATUSES.includes(value as ContributionLaneStatus)
+    ? value as ContributionLaneStatus
+    : null;
 }
 
 function normalizeContractExperiment(value: unknown): ContractExperiment | null {
@@ -72,16 +81,28 @@ function normalizeArray<T>(values: unknown, normalize: (value: unknown) => T | n
     : null;
 }
 
-function isContributionLane(value: unknown): value is ContributionLane {
-  if (!isRecord(value)) return false;
-  return (
-    isString(value.id) &&
-    isString(value.name) &&
-    typeof value.minimumPoints === "number" &&
-    typeof value.maximumPoints === "number" &&
-    typeof value.pioneerOpportunity === "boolean" &&
-    CONTRIBUTION_LANE_STATUSES.includes(value.status as ContributionLane["status"])
-  );
+function normalizeContributionLane(value: unknown): ContributionLane | null {
+  if (!isRecord(value)) return null;
+  const status = normalizeLaneStatus(value.status);
+  if (
+    !isString(value.id) ||
+    !isString(value.name) ||
+    typeof value.minimumPoints !== "number" ||
+    typeof value.maximumPoints !== "number" ||
+    typeof value.pioneerOpportunity !== "boolean" ||
+    !status
+  ) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    name: value.name,
+    minimumPoints: value.minimumPoints,
+    maximumPoints: value.maximumPoints,
+    pioneerOpportunity: value.pioneerOpportunity,
+    status
+  };
 }
 
 function isBuildLogEntry(value: unknown): value is BuildLogEntry {
@@ -95,9 +116,9 @@ function isBuildLogEntry(value: unknown): value is BuildLogEntry {
   );
 }
 
-function isEvidencePack(value: unknown): value is EvidencePack {
-  if (!isRecord(value)) return false;
-  return [
+function normalizeEvidencePack(value: unknown): EvidencePack | null {
+  if (!isRecord(value)) return null;
+  const requiredStringFields = [
     "experimentId",
     "contributionCategoryId",
     "title",
@@ -108,7 +129,32 @@ function isEvidencePack(value: unknown): value is EvidencePack {
     "nextMilestone",
     "additionalEvidenceLinks",
     "portalSubmissionNotes"
-  ].every((key) => isString(value[key]));
+  ];
+
+  if (!requiredStringFields.every((key) => isString(value[key]))) {
+    return null;
+  }
+
+  return {
+    experimentId: stringField(value, "experimentId"),
+    contributionCategoryId: stringField(value, "contributionCategoryId"),
+    title: stringField(value, "title"),
+    projectSummary: stringField(value, "projectSummary"),
+    genLayerRelevance: stringField(value, "genLayerRelevance"),
+    contractAddressNotApplicableReason: stringField(
+      value,
+      "contractAddressNotApplicableReason"
+    ),
+    transactionHashNotApplicableReason: stringField(
+      value,
+      "transactionHashNotApplicableReason"
+    ),
+    whatWasTested: stringField(value, "whatWasTested"),
+    knownLimitations: stringField(value, "knownLimitations"),
+    nextMilestone: stringField(value, "nextMilestone"),
+    additionalEvidenceLinks: stringField(value, "additionalEvidenceLinks"),
+    portalSubmissionNotes: stringField(value, "portalSubmissionNotes")
+  };
 }
 
 function normalizeScoutWorkspace(value: unknown): ScoutWorkspace | null {
@@ -120,19 +166,15 @@ function normalizeScoutWorkspace(value: unknown): ScoutWorkspace | null {
   );
   const contributionLanes = normalizeArray(
     value.contributionLanes,
-    (lane) => (isContributionLane(lane) ? lane : null)
+    normalizeContributionLane
   );
   const buildLogEntries = normalizeArray(
     value.buildLogEntries,
     (entry) => (isBuildLogEntry(entry) ? entry : null)
   );
+  const evidencePack = normalizeEvidencePack(value.evidencePack);
 
-  if (
-    !experiments ||
-    !contributionLanes ||
-    !buildLogEntries ||
-    !isEvidencePack(value.evidencePack)
-  ) {
+  if (!experiments || !contributionLanes || !buildLogEntries || !evidencePack) {
     return null;
   }
 
@@ -141,7 +183,7 @@ function normalizeScoutWorkspace(value: unknown): ScoutWorkspace | null {
     experiments,
     contributionLanes,
     buildLogEntries,
-    evidencePack: value.evidencePack
+    evidencePack
   };
 }
 
@@ -190,11 +232,8 @@ function migrateLegacyWorkspace(value: unknown): ScoutWorkspace | null {
     );
     workspace.contributionLanes = workspace.contributionLanes.map((lane) => {
       const legacy = legacyByName.get(lane.name);
-      const status = legacy?.interest;
-      return isString(status) &&
-        CONTRIBUTION_LANE_STATUSES.includes(status as ContributionLane["status"])
-        ? { ...lane, status: status as ContributionLane["status"] }
-        : lane;
+      const status = normalizeLaneStatus(legacy?.interest);
+      return status ? { ...lane, status } : lane;
     });
   }
 
@@ -314,3 +353,4 @@ export function parseBackupFile(contents: string): {
     };
   }
 }
+

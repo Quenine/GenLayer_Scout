@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { Filter, Search, Sparkles } from "lucide-react";
@@ -6,12 +6,17 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { useScout } from "@/components/scout-provider";
 import {
+  ACTIVE_CONTRIBUTION_LANE_STATUSES,
   CONTRIBUTION_LANE_STATUSES,
   type ContributionLaneStatus
 } from "@/lib/types";
 import { cn, formatPoints } from "@/lib/utils";
 
 type LaneView = "all" | "pioneer" | "active";
+
+function isActiveLane(status: ContributionLaneStatus) {
+  return (ACTIVE_CONTRIBUTION_LANE_STATUSES as readonly string[]).includes(status);
+}
 
 export default function ContributionLanesPage() {
   const { contributionLanes, updateContributionLane } = useScout();
@@ -26,7 +31,7 @@ export default function ContributionLanesPage() {
       const matchesView =
         view === "all" ||
         (view === "pioneer" && lane.pioneerOpportunity) ||
-        (view === "active" && lane.status !== "watching");
+        (view === "active" && isActiveLane(lane.status));
       return matchesSearch && matchesView;
     });
   }, [contributionLanes, search, view]);
@@ -36,7 +41,7 @@ export default function ContributionLanesPage() {
       <PageHeader
         eyebrow="Portal contribution planning"
         title="Contribution lanes"
-        description="Use the supplied Portal category ranges as a planning reference and record which lanes you are actively exploring. Scout does not predict points or confirm eligibility."
+        description="Use the supplied Portal category ranges as a planning reference and record which lanes you are building, submitting, accepting, or deferring. Scout does not predict points or confirm eligibility."
       />
 
       <div className="mb-5 grid gap-4 sm:grid-cols-3">
@@ -51,9 +56,9 @@ export default function ContributionLanesPage() {
           </p>
         </div>
         <div className="card p-4">
-          <p className="text-xs font-medium text-slate-500">Marked active</p>
+          <p className="text-xs font-medium text-slate-500">Active lanes</p>
           <p className="mt-2 text-2xl font-semibold">
-            {contributionLanes.filter((lane) => lane.status !== "watching").length}
+            {contributionLanes.filter((lane) => isActiveLane(lane.status)).length}
           </p>
         </div>
       </div>
@@ -151,7 +156,7 @@ export default function ContributionLanesPage() {
           <EmptyState
             icon={Search}
             title="No contribution lanes match"
-            description="Clear the search or switch the lane filter."
+            description="Clear the search or switch the lane filter. Active means building, submitted, or accepted."
           />
         )}
       </section>

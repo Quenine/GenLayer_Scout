@@ -11,13 +11,20 @@ export type ExperimentStatus = (typeof EXPERIMENT_STATUSES)[number];
 
 export const CONTRIBUTION_LANE_STATUSES = [
   "watching",
-  "exploring",
   "building",
-  "submitted"
+  "submitted",
+  "accepted",
+  "deferred"
 ] as const;
 
 export type ContributionLaneStatus =
   (typeof CONTRIBUTION_LANE_STATUSES)[number];
+
+export const ACTIVE_CONTRIBUTION_LANE_STATUSES = [
+  "building",
+  "submitted",
+  "accepted"
+] as const satisfies readonly ContributionLaneStatus[];
 
 export const BUILD_LOG_ENTRY_TYPES = [
   "progress",
@@ -60,6 +67,8 @@ export interface EvidencePack {
   title: string;
   projectSummary: string;
   genLayerRelevance: string;
+  contractAddressNotApplicableReason: string;
+  transactionHashNotApplicableReason: string;
   whatWasTested: string;
   knownLimitations: string;
   nextMilestone: string;

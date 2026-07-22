@@ -68,3 +68,21 @@
 - Browser storage remains the only persistence layer.
 - No GenLayer Studio, network, or Portal data is queried or verified.
 - v0.2 verifier work depends on confirmed supported GenLayer verification semantics.
+
+## 2026-06-23 - submission-readiness polish
+
+### Implemented
+
+- Added an Evidence Pack submission readiness checklist with Ready, Needs evidence, and Incomplete states.
+- Added non-blocking quality guard warnings for weak placeholder terms.
+- Made selected experiment provenance visible before Markdown generation.
+- Added not-applicable reason fields for contract address and transaction hash.
+- Updated contribution lane planning statuses to Watching, Building, Submitted, Accepted, and Deferred.
+- Limited dashboard active lanes to Building, Submitted, and Accepted.
+- Added empty build log suggestions as prompts only.
+
+### Remaining limitations
+
+- Readiness is a local completeness check, not Portal approval or network verification.
+- Placeholder detection is intentionally simple and may miss vague wording that does not use the watched terms.
+- v0.2 verifier work still depends on confirmed supported GenLayer verification semantics.

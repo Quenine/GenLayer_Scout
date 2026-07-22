@@ -1,0 +1,189 @@
+{
+  "app": "GenLayer Scout",
+  "exportedAt": "2026-06-23T12:00:00.000Z",
+  "schemaVersion": 1,
+  "workspace": {
+    "schemaVersion": 1,
+    "experiments": [
+      {
+        "id": "experiment-first-studio-faucet-todo",
+        "contractName": "First Studio Faucet deployment",
+        "studioFileName": "TODO: paste exact Studio contract file name, for example faucet.py",
+        "deployedContractAddress": "TODO: paste exact deployed contract address from the first Studio Faucet deployment",
+        "transactionHash": "TODO: paste exact transaction hash from the first Studio Faucet deployment",
+        "status": "deployed",
+        "experimentNotes": "Local test record for the user's first Studio Faucet deployment. Replace TODO values with exact evidence from Studio before using this in a Portal submission.",
+        "evidenceUrl": "TODO: add screenshot, repository, or deployment evidence URL for the first Studio Faucet deployment",
+        "portalSubmissionNotes": "TODO: add reviewer context and reproduction notes after checking the original Studio run.",
+        "createdAt": "2026-06-23T12:00:00.000Z",
+        "updatedAt": "2026-06-23T12:00:00.000Z"
+      }
+    ],
+    "contributionLanes": [
+      {
+        "id": "projects",
+        "name": "Projects",
+        "minimumPoints": 20,
+        "maximumPoints": 4000,
+        "pioneerOpportunity": false,
+        "status": "building"
+      },
+      {
+        "id": "milestones",
+        "name": "Milestones",
+        "minimumPoints": 20,
+        "maximumPoints": 4000,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      },
+      {
+        "id": "research-analysis",
+        "name": "Research & Analysis",
+        "minimumPoints": 50,
+        "maximumPoints": 2500,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      },
+      {
+        "id": "tools-infrastructure",
+        "name": "Tools & Infrastructure",
+        "minimumPoints": 50,
+        "maximumPoints": 2500,
+        "pioneerOpportunity": false,
+        "status": "building"
+      },
+      {
+        "id": "community-building",
+        "name": "Community Building",
+        "minimumPoints": 50,
+        "maximumPoints": 2500,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      },
+      {
+        "id": "explorer",
+        "name": "Explorer",
+        "minimumPoints": 500,
+        "maximumPoints": 1500,
+        "pioneerOpportunity": true,
+        "status": "watching"
+      },
+      {
+        "id": "network-dashboard",
+        "name": "Network Dashboard",
+        "minimumPoints": 150,
+        "maximumPoints": 1500,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      },
+      {
+        "id": "third-party-integrations",
+        "name": "3rd party integrations",
+        "minimumPoints": 50,
+        "maximumPoints": 1000,
+        "pioneerOpportunity": true,
+        "status": "watching"
+      },
+      {
+        "id": "grayboxing",
+        "name": "Grayboxing",
+        "minimumPoints": 50,
+        "maximumPoints": 1000,
+        "pioneerOpportunity": true,
+        "status": "watching"
+      },
+      {
+        "id": "gas-fees-simulator-tests",
+        "name": "Gas Fees Simulator Tests",
+        "minimumPoints": 500,
+        "maximumPoints": 1000,
+        "pioneerOpportunity": true,
+        "status": "watching"
+      },
+      {
+        "id": "benchmarks",
+        "name": "Benchmarks",
+        "minimumPoints": 50,
+        "maximumPoints": 500,
+        "pioneerOpportunity": true,
+        "status": "watching"
+      },
+      {
+        "id": "create-intelligent-contracts",
+        "name": "Create Intelligent Contracts",
+        "minimumPoints": 50,
+        "maximumPoints": 500,
+        "pioneerOpportunity": false,
+        "status": "building"
+      },
+      {
+        "id": "educational-content",
+        "name": "Educational Content",
+        "minimumPoints": 20,
+        "maximumPoints": 600,
+        "pioneerOpportunity": false,
+        "status": "building"
+      },
+      {
+        "id": "bug-report",
+        "name": "Bug Report",
+        "minimumPoints": 20,
+        "maximumPoints": 200,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      },
+      {
+        "id": "blog-post",
+        "name": "Blog Post",
+        "minimumPoints": 20,
+        "maximumPoints": 200,
+        "pioneerOpportunity": false,
+        "status": "watching"
+      }
+    ],
+    "buildLogEntries": [
+      {
+        "id": "build-log-studio-faucet-todo",
+        "date": "2026-06-23",
+        "type": "progress",
+        "title": "First Studio deployment completed",
+        "details": "Recorded the first Studio Faucet deployment as a local test entry. TODO: replace with exact address, transaction hash, and screenshot evidence from the original Studio run."
+      },
+      {
+        "id": "build-log-studio-lesson",
+        "date": "2026-06-23",
+        "type": "lesson",
+        "title": "Studio is a code/deployment environment, not a prompt box",
+        "details": "GenLayer Studio work should be documented like software work: contract file, observed state, deployment evidence, test notes, limitations, and next milestone."
+      },
+      {
+        "id": "build-log-scout-workflow",
+        "date": "2026-06-23",
+        "type": "progress",
+        "title": "Created Scout v0.1.1 local-first evidence workflow",
+        "details": "Built a local workspace for contract experiments, contribution lanes, evidence readiness checks, Markdown generation, build notes, and backup import/export."
+      },
+      {
+        "id": "build-log-verifier-plan",
+        "date": "2026-06-23",
+        "type": "finding",
+        "title": "Planned v0.2 Intelligent Contract verifier",
+        "details": "A verifier should remain read-only and distinguish manual records from externally checked observations. It should only be implemented after supported GenLayer verification semantics are confirmed."
+      }
+    ],
+    "evidencePack": {
+      "experimentId": "experiment-first-studio-faucet-todo",
+      "contributionCategoryId": "projects",
+      "title": "GenLayer Scout - local-first builder evidence workspace",
+      "projectSummary": "GenLayer Scout is a local-first dashboard for tracking Studio contract experiments, contribution lanes, build notes, and evidence packs for Portal submissions. It is designed to keep manual evidence organized without claiming live GenLayer API access.",
+      "genLayerRelevance": "GenLayer builders need a practical way to preserve contract file names, observed deployment states, evidence links, limitations, and next milestones between Studio work and Portal submission writing. Scout focuses on that handoff.",
+      "contractAddressNotApplicableReason": "",
+      "transactionHashNotApplicableReason": "",
+      "whatWasTested": "TODO: replace with observed browser QA results, including dashboard, experiment edit/delete, evidence readiness, Markdown copy/download, backup export/import, and mobile long-hash handling.",
+      "knownLimitations": "Local-only v0.1.1. No Studio integration, no network verification, no Portal submission API, no point prediction, and one evidence draft at a time.",
+      "nextMilestone": "v0.2: design a read-only Intelligent Contract verifier only after supported GenLayer verification semantics are confirmed.",
+      "additionalEvidenceLinks": "TODO: add screenshot of dashboard first-use/readiness flow\nTODO: add screenshot of experiment ledger with real first Faucet deployment evidence\nTODO: add screenshot or recording of Evidence Pack Markdown generation\nTODO: add repository URL only if this project is actually published",
+      "portalSubmissionNotes": "This draft is prepared for a Projects submission. All TODO fields must be replaced with real evidence before submission. Scout does not verify contract addresses, hashes, or Portal eligibility."
+    }
+  }
+}
