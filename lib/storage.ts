@@ -3,11 +3,13 @@ import {
   BUILD_LOG_ENTRY_TYPES,
   CONTRIBUTION_LANE_STATUSES,
   EXPERIMENT_STATUSES,
+  VERIFICATION_RESULTS,
   type BuildLogEntry,
   type ContractExperiment,
   type ContributionLane,
   type ContributionLaneStatus,
   type EvidencePack,
+  type ExperimentVerification,
   type ScoutBackupFile,
   type ScoutWorkspace
 } from "@/lib/types";
@@ -69,8 +71,14 @@ function normalizeContractExperiment(value: unknown): ContractExperiment | null 
     evidenceUrl: value.evidenceUrl,
     portalSubmissionNotes: value.portalSubmissionNotes,
     createdAt,
-    updatedAt
+    updatedAt,
+    ...(normalizeVerification(value.verification) ? { verification: normalizeVerification(value.verification)! } : {})
   };
+}
+
+function normalizeVerification(value: unknown): ExperimentVerification | null {
+  if (!isRecord(value) || value.source !== "genlayer-rpc" || !isString(value.rpcUrl) || !isString(value.checkedAt) || typeof value.transactionFound !== "boolean" || typeof value.receiptAvailable !== "boolean" || !isString(value.observedStatus) || !(typeof value.observedStatusCode === "number" || value.observedStatusCode === null) || !(typeof value.statusMatchesManual === "boolean" || value.statusMatchesManual === null) || !isString(value.observedContractAddress) || !(typeof value.addressMatchesManual === "boolean" || value.addressMatchesManual === null) || !isString(value.result) || !VERIFICATION_RESULTS.includes(value.result as ExperimentVerification["result"]) || !isString(value.errorMessage)) return null;
+  return value as unknown as ExperimentVerification;
 }
 
 function normalizeArray<T>(values: unknown, normalize: (value: unknown) => T | null) {
@@ -342,7 +350,7 @@ export function parseBackupFile(contents: string): {
     if (!workspace) {
       return {
         workspace: null,
-        error: "This file is not a valid GenLayer Scout v0.1.1 workspace backup."
+        error: "This file is not a valid GenLayer Scout workspace backup."
       };
     }
     return { workspace, error: null };

@@ -75,7 +75,8 @@ export function ExperimentForm({
       evidenceUrl: form.evidenceUrl.trim(),
       portalSubmissionNotes: form.portalSubmissionNotes.trim(),
       createdAt: initialExperiment?.createdAt ?? now,
-      updatedAt: isEditing ? now : now
+      updatedAt: now,
+      verification: initialExperiment?.verification
     });
   }
 

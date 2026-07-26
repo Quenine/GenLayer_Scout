@@ -33,6 +33,21 @@ export function buildEvidencePackMarkdown({
   const noExperimentNote = experiment
     ? ""
     : "No experiment selected. This evidence pack does not include Studio deployment details.\n";
+  const verification = experiment?.verification;
+  const verificationSection = verification ? `\n## Read-only verification
+- **Source RPC:** ${verification.rpcUrl}
+- **Checked at:** ${formatDate(verification.checkedAt)}
+- **Transaction found:** ${verification.transactionFound ? "Yes" : "No"}
+- **Receipt available:** ${verification.receiptAvailable ? "Yes" : "No"}
+- **Observed status:** ${verification.observedStatus || "Not available"}
+- **Manual status:** ${experiment.status}
+- **Status match:** ${verification.statusMatchesManual === null ? "Not comparable" : verification.statusMatchesManual ? "Yes" : "No"}
+- **Observed contract/recipient address:** ${verification.observedContractAddress || "Not available"}
+- **Manual contract address:** ${experiment.deployedContractAddress || "Not recorded"}
+- **Address match:** ${verification.addressMatchesManual === null ? "Not comparable" : verification.addressMatchesManual ? "Yes" : "No"}
+- **Result:** ${verification.result}
+${verification.errorMessage ? `- **Error:** ${verification.errorMessage}\n` : ""}
+This is an RPC observation, not GenLayer Builder Portal acceptance or reward eligibility.\n` : "";
 
   return `# ${valueOrPrompt(evidencePack.title, "Contribution title")}
 
@@ -56,6 +71,7 @@ ${noExperimentNote}- **Contract experiment:** ${experiment?.contractName || "Not
 - **Transaction hash:** ${experiment?.transactionHash || evidencePack.transactionHashNotApplicableReason || "Not recorded"}
 - **Observed transaction state:** ${experiment?.status || "Not recorded"}
 - **Experiment recorded:** ${experiment ? formatDate(experiment.createdAt) : "Not recorded"}
+${verificationSection}
 
 ## Screenshots and evidence links
 ${evidenceList}
@@ -73,5 +89,5 @@ ${valueOrPrompt(evidencePack.nextMilestone, "State the next concrete result")}
 ${valueOrPrompt(evidencePack.portalSubmissionNotes, "Add reviewer context, reproduction notes, or scope boundaries")}
 
 ---
-Prepared in GenLayer Scout v0.1.1 from manually entered records. Verify all evidence against the original Studio run and Portal submission requirements before posting.`;
+Prepared in GenLayer Scout v0.2.0. Manual evidence remains necessary; verify all evidence against the original Studio run and Portal submission requirements before posting.`;
 }

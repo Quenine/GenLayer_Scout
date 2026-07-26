@@ -19,6 +19,7 @@ export function calculateDashboardSummary(
     ).length,
     highOpportunityLanes: contributionLanes.filter(
       (lane) => lane.maximumPoints >= 1500
-    ).length
+    ).length,
+    readOnlyObservations: experiments.filter((experiment) => experiment.verification && !["unavailable", "manual_only"].includes(experiment.verification.result)).length
   };
 }

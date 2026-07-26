@@ -11,6 +11,7 @@ import {
   Menu,
   Radar,
   Target,
+  ShieldCheck,
   X
 } from "lucide-react";
 import { useState } from "react";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/runs", label: "Experiments", icon: FlaskConical },
+  { href: "/verify", label: "Verify", icon: ShieldCheck },
   { href: "/opportunities", label: "Contribution lanes", icon: Target },
   { href: "/evidence", label: "Evidence pack", icon: FileOutput },
   { href: "/build-log", label: "Build log", icon: BookOpenText }
@@ -77,7 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           Local workspace
         </div>
         <p className="text-[11px] leading-relaxed text-slate-500">
-          Data stays in this browser. No live GenLayer API connection.
+          Data stays in this browser. Verification uses only the RPC endpoint you provide.
         </p>
       </div>
     </div>
@@ -120,10 +122,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="hidden items-center gap-2 text-xs text-slate-500 lg:flex">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            v0.1.1 - manual local data
+            v0.2.0 - local-first + read-only RPC
           </div>
           <div className="ml-auto rounded-full border border-line bg-white px-3 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-slate-500">
-            No live API
+            No wallet signing
           </div>
         </header>
         <main className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">

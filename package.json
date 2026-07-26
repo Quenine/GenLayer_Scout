@@ -1,12 +1,14 @@
 {
   "name": "genlayer-scout",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
+    "verify": "npm run lint && npm run test && npm run build",
     "prepare:submission": "tsx scripts/prepare-submission.ts"
   },
   "dependencies": {
@@ -25,6 +27,7 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.22.4",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   }
 }

@@ -9,6 +9,15 @@ export const EXPERIMENT_STATUSES = [
 
 export type ExperimentStatus = (typeof EXPERIMENT_STATUSES)[number];
 
+export const VERIFICATION_RESULTS = ["verified", "mismatch", "not_found", "unavailable", "manual_only"] as const;
+export type VerificationResult = (typeof VERIFICATION_RESULTS)[number];
+export interface ExperimentVerification {
+  source: "genlayer-rpc"; rpcUrl: string; checkedAt: string; transactionFound: boolean;
+  receiptAvailable: boolean; observedStatus: string; observedStatusCode: number | null;
+  statusMatchesManual: boolean | null; observedContractAddress: string;
+  addressMatchesManual: boolean | null; result: VerificationResult; errorMessage: string;
+}
+
 export const CONTRIBUTION_LANE_STATUSES = [
   "watching",
   "building",
@@ -47,6 +56,7 @@ export interface ContractExperiment {
   portalSubmissionNotes: string;
   createdAt: string;
   updatedAt: string;
+  verification?: ExperimentVerification;
 }
 
 export interface ContributionCategory {
@@ -89,6 +99,7 @@ export interface DashboardSummaryStats {
   finalizedTransactions: number;
   experimentsMissingEvidence: number;
   highOpportunityLanes: number;
+  readOnlyObservations: number;
 }
 
 export interface ScoutWorkspace {

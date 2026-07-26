@@ -2,6 +2,16 @@
 
 The roadmap favors local workflow reliability before external integration. Scout should remain useful even when every value is manually entered.
 
+## v0.2 - Read-only verification (implemented)
+
+- Query a user-selected GenLayer RPC without wallet signing.
+- Store status and receipt observations separately from manual records.
+- Report matches, mismatches, not-found results, and endpoint failures honestly.
+- Include observations in evidence Markdown and backward-compatible backups.
+- Cover reports, storage migration, and RPC behavior with Vitest (`npm run test`; full checks: `npm run verify`).
+
+This cannot validate source code, contract behavior, authorship, Portal acceptance, eligibility, points, or rewards. Manual evidence remains necessary.
+
 ## v0.1 - Local builder record
 
 - Manual contract experiment ledger

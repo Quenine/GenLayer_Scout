@@ -1,6 +1,8 @@
 ﻿# GenLayer Scout
 
-GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. It keeps the practical records that are easy to lose between a GenLayer Studio experiment and a later Portal submission: the Python contract file, deployed contract address, transaction hash, observed transaction state, screenshots, test notes, limitations, and next milestone.
+GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds an optional read-only RPC observation path through the Verify route. It calls `gen_getTransactionStatus` and `gen_getTransactionReceipt` against an endpoint you provide, never signs or submits transactions, and does not represent Builder Portal acceptance or reward eligibility.
+
+Verification stays separate from manual values and is included in backups and evidence Markdown. Manual evidence remains necessary because RPC results cannot establish source, intent, reproduction steps, screenshots, authorship, or Portal review outcomes. Run `npm run test` for tests or `npm run verify` for lint, tests, and the production build. See [verification notes](docs/verification-notes.md).
 
 ## Why it exists
 

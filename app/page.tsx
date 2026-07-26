@@ -8,6 +8,7 @@ import {
   FlaskConical,
   Plus,
   Target
+  ,ShieldCheck
 } from "lucide-react";
 import { DataBackupPanel } from "@/components/data-backup-panel";
 import { EmptyState } from "@/components/empty-state";
@@ -36,6 +37,13 @@ export default function DashboardPage() {
     )
     .slice(0, 4);
   const summaryCards = [
+    {
+      label: "Read-only observations",
+      value: summary.readOnlyObservations,
+      detail: "Found, verified, or mismatched RPC checks",
+      icon: ShieldCheck,
+      iconClassName: "bg-sky-50 text-sky-700"
+    },
     {
       label: "Experiments tracked",
       value: summary.experimentsTracked,
@@ -96,7 +104,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {summaryCards.map((card) => <SummaryCard key={card.label} {...card} />)}
       </div>
 
