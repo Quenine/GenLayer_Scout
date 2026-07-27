@@ -27,11 +27,15 @@ Generated: [YYYY-MM-DD]
 
 ## Read-only verification (when run)
 
+- **RPC profile:** [studionet, bradbury, asimov, or custom]
 - **Source RPC:** [Endpoint]
+- **Successful request dialect:** [object or positional]
 - **Observed raw status and status code:** [Values]
 - **Manual status comparison:** [Yes, No, or Not comparable]
 - **Result:** [verified, observed, mismatch, not_found, unavailable, or manual_only]
+- **Receipt capability:** [available, unsupported, unavailable, or not_checked]
 - **Receipt recipient:** [Value or Not available]
+- **Contract-state capability:** [available, unsupported, unavailable, or not_checked]
 - **Contract-state lookup:** [found, not_found, unavailable, or not_checked]
 
 A receipt recipient is not proof of the deployed contract address. A `found` contract lookup means the endpoint returned a string for the supplied manual address, including `0x`; it does not prove authorship or behavior.

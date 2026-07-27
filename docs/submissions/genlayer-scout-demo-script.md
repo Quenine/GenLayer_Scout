@@ -58,3 +58,5 @@ Return to dashboard:
 ## Close, 5 seconds
 
 "v0.2 adds conservative read-only RPC observation while Scout stays local-first and evidence-focused. Receipt recipients are not contract proof, and non-comparable statuses remain observed."
+
+"The verifier records the RPC profile and successful dialect. On Studionet it makes one positional lifecycle-status call, skips unsupported receipt and contract-state methods, and keeps the verified lifecycle claim separate from authorship or behavior."

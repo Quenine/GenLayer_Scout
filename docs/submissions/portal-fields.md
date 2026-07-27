@@ -32,7 +32,7 @@ Scout is intended to make submissions easier to review by separating evidence fr
 - Local-first only
 - Manual evidence entry only
 - No GenLayer Studio API integration
-- No network transaction verification
+- No proof of authorship or contract behavior from lifecycle verification
 - No Portal submission automation
 - No point prediction or reward claim
 - One evidence pack draft at a time
@@ -48,3 +48,5 @@ Scout is intended to make submissions easier to review by separating evidence fr
 ## Reviewer notes
 
 All TODO placeholders must be replaced before submission. Scout should be reviewed as a local-first builder workflow tool, not as a live network explorer or official Portal integration.
+
+Studionet lifecycle verification uses its confirmed positional request dialect. Optional receipt and contract-state methods are recorded as unsupported; this does not prove authorship or contract behavior.

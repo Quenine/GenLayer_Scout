@@ -23,3 +23,5 @@ I would appreciate feedback from builders on the evidence checklist especially:
 - Would a future read-only Intelligent Contract verifier be useful if it clearly separates verified observations from manual notes?
 
 TODO: add real screenshots or repo/demo links before posting.
+
+Compatibility update: Studionet lifecycle checks use the confirmed positional status dialect. Receipt and contract-state methods are labeled unsupported, and lifecycle verification does not prove authorship or behavior.

@@ -1,8 +1,8 @@
 ﻿# GenLayer Scout
 
-GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds an optional read-only RPC observation path through the Verify route. It calls `gen_getTransactionStatus` and `gen_getTransactionReceipt` with object-form transaction parameters and can optionally call `gen_getContractState` for the manually recorded address. It never signs or submits transactions and does not represent Builder Portal acceptance or reward eligibility.
+GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds profile-aware, read-only lifecycle verification. Studionet uses its confirmed positional transaction-status dialect and skips receipt and contract-state methods because they are not exposed; Bradbury and Asimov use documented object-form requests; Custom supports object-only or conservative Auto compatibility.
 
-Verification stays separate from manual values and is included in backups and evidence Markdown. Manual evidence remains necessary because RPC results cannot establish source, intent, reproduction steps, screenshots, authorship, or Portal review outcomes. Run `npm run test` for tests or `npm run verify` for lint, tests, and the production build. See [verification notes](docs/verification-notes.md).
+Verification persists the RPC profile, successful dialect, lifecycle comparison, and optional-method capabilities. Lifecycle verification is independent of receipt and contract-state support and does not prove authorship or contract behavior. Raw RPC response bodies are never exposed. See [verification notes](docs/verification-notes.md) and the [sanitized Studionet finding](docs/findings/studionet-rpc-compatibility.md).
 
 ## Why it exists
 
@@ -43,11 +43,9 @@ The export action wraps that workspace in a JSON backup file with app name, sche
 
 ## v0.2 verification behavior
 
-The Verify route defaults to Studionet and offers Bradbury, Asimov, and Custom RPC presets. It requires an HTTP(S) endpoint and a `0x`-prefixed transaction hash, applies a 12-second timeout, and stores only safe error messages.
+The Verify route defaults to Studionet and offers Bradbury, Asimov, and Custom profiles. Studionet sends positional status parameters and does not call unsupported optional methods. Bradbury and Asimov use documented object parameters. Custom Auto starts with object form and may retry status positionally after an eligible parameter-shape failure.
 
-`verified` requires at least one successful safe status comparison and no failed comparison. Valid but non-comparable lifecycle or unknown statuses are `observed`. Receipt recipients are labeled as recipients and never used as contract-address proof. The optional contract-state lookup records only whether the endpoint returned a string for the manual address; `found` does not prove authorship or behavior.
-
-Scout still does not connect to Studio, write to a network, read from or submit to the Portal, prove source code or behavior, predict outcomes or rewards, authenticate users, synchronize data, or provide team access. The readiness checklist measures local completeness, not truth or Portal acceptance.
+A matching safe lifecycle comparison may be `verified` even when receipt and contract-state capabilities are `unsupported`. Receipt recipients remain routing observations only. Lifecycle verification does not prove source code, authorship, ownership, behavior, Portal acceptance, eligibility, points, or rewards.
 
 ## Setup
 

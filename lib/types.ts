@@ -19,6 +19,25 @@ export const VERIFICATION_RESULTS = [
 ] as const;
 export type VerificationResult = (typeof VERIFICATION_RESULTS)[number];
 
+export const RPC_PROFILES = [
+  "studionet",
+  "bradbury",
+  "asimov",
+  "custom"
+] as const;
+export type RpcProfile = (typeof RPC_PROFILES)[number];
+
+export const TRANSACTION_STATUS_DIALECTS = ["object", "positional"] as const;
+export type TransactionStatusDialect =
+  (typeof TRANSACTION_STATUS_DIALECTS)[number];
+
+export const RPC_CAPABILITIES = [
+  "available",
+  "unsupported",
+  "unavailable",
+  "not_checked"
+] as const;
+export type RpcCapability = (typeof RPC_CAPABILITIES)[number];
 export const CONTRACT_LOOKUP_RESULTS = [
   "found",
   "not_found",
@@ -30,6 +49,10 @@ export type ContractLookupResult = (typeof CONTRACT_LOOKUP_RESULTS)[number];
 export interface ExperimentVerification {
   source: "genlayer-rpc";
   rpcUrl: string;
+  rpcProfile: RpcProfile;
+  transactionStatusDialect: TransactionStatusDialect;
+  receiptCapability: RpcCapability;
+  contractStateCapability: RpcCapability;
   checkedAt: string;
   transactionFound: boolean;
   receiptAvailable: boolean;

@@ -20,6 +20,10 @@ const experiment: ContractExperiment = {
 const verification: ExperimentVerification = {
   source: "genlayer-rpc",
   rpcUrl: "https://rpc",
+  rpcProfile: "custom",
+  transactionStatusDialect: "object",
+  receiptCapability: "available",
+  contractStateCapability: "available",
   checkedAt: "2026-01-01",
   transactionFound: true,
   receiptAvailable: true,
@@ -52,6 +56,10 @@ describe("evidence report", () => {
     });
 
     expect(text).toContain("## Read-only verification");
+    expect(text).toContain("RPC profile:** custom");
+    expect(text).toContain("transaction-status dialect:** object");
+    expect(text).toContain("Receipt capability:** available");
+    expect(text).toContain("Contract-state capability:** available");
     expect(text).toContain("Receipt recipient:** 0xrecipient");
     expect(text).toContain("not proof of the deployed contract address");
     expect(text).toContain("Contract-state lookup:** found");

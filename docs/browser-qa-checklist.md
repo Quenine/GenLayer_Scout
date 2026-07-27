@@ -100,3 +100,12 @@ Use this checklist before tagging or submitting the current build. Manual record
 - [ ] Confirm desktop table columns do not break layout.
 - [ ] Confirm mobile cards wrap the full value cleanly.
 - [ ] Confirm copy buttons copy the exact full value, not the shortened display text.
+
+## RPC profile compatibility
+
+- [ ] Studionet sends one positional status request and shows receipt and contract-state as unsupported.
+- [ ] A matching Studionet lifecycle status can be verified without optional-method calls.
+- [ ] Bradbury and Asimov show object-form status dialect metadata.
+- [ ] Custom exposes Auto compatibility and object-only choices.
+- [ ] Capability, dialect, lifecycle comparison, and scope note appear in saved evidence Markdown.
+- [ ] No raw server, SQL, database, or stack-trace details appear in errors.

@@ -1,7 +1,10 @@
 ﻿import type {
   ContractLookupResult,
   ExperimentStatus,
-  ExperimentVerification
+  ExperimentVerification,
+  RpcCapability,
+  RpcProfile,
+  TransactionStatusDialect
 } from "@/lib/types";
 
 export const RPC_PRESETS = {
@@ -10,11 +13,16 @@ export const RPC_PRESETS = {
   asimov: "https://rpc-asimov.genlayer.com"
 } as const;
 
+export type CustomCompatibilityMode = "object" | "auto";
+
 const RPC_TIMEOUT_MS = 12_000;
 type UnknownRecord = Record<string, unknown>;
+type RpcParams = Array<string | UnknownRecord>;
 
 interface VerifyInput {
   rpcUrl: string;
+  rpcProfile: RpcProfile;
+  customCompatibilityMode?: CustomCompatibilityMode;
   transactionHash: string;
   manualStatus: ExperimentStatus;
   manualContractAddress: string;
@@ -105,7 +113,6 @@ function comparableStatus(raw: string): ExperimentStatus | null {
 
 function isNotFound(reply: RpcResponse): boolean {
   const message = reply.error?.message?.toLowerCase() ?? "";
-
   return (
     reply.result === null ||
     reply.error?.code === -32001 ||
@@ -137,7 +144,7 @@ function safeRequestError(error: unknown): string {
 async function rpc(
   url: string,
   method: string,
-  params: UnknownRecord[]
+  params: RpcParams
 ): Promise<RpcResponse> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), RPC_TIMEOUT_MS);
@@ -146,12 +153,7 @@ async function rpc(
     const response = await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method,
-        params
-      }),
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
       signal: controller.signal
     });
 
@@ -160,8 +162,15 @@ async function rpc(
     }
 
     try {
-      return (await response.json()) as RpcResponse;
-    } catch {
+      const payload = await response.json() as unknown;
+      if (!isRecord(payload)) {
+        throw new Error("INVALID_JSON_RPC");
+      }
+      return payload as RpcResponse;
+    } catch (error) {
+      if (error instanceof Error && error.message === "INVALID_JSON_RPC") {
+        throw error;
+      }
       throw new Error("INVALID_JSON");
     }
   } finally {
@@ -169,10 +178,19 @@ async function rpc(
   }
 }
 
+function initialDialect(profile: RpcProfile): TransactionStatusDialect {
+  return profile === "studionet" ? "positional" : "object";
+}
+
 function createBaseVerification(input: VerifyInput): ExperimentVerification {
+  const unsupported = input.rpcProfile === "studionet";
   return {
     source: "genlayer-rpc",
     rpcUrl: input.rpcUrl.trim(),
+    rpcProfile: input.rpcProfile,
+    transactionStatusDialect: initialDialect(input.rpcProfile),
+    receiptCapability: unsupported ? "unsupported" : "not_checked",
+    contractStateCapability: unsupported ? "unsupported" : "not_checked",
     checkedAt: new Date().toISOString(),
     transactionFound: false,
     receiptAvailable: false,
@@ -187,25 +205,87 @@ function createBaseVerification(input: VerifyInput): ExperimentVerification {
   };
 }
 
+function statusParams(
+  dialect: TransactionStatusDialect,
+  transactionHash: string
+): RpcParams {
+  return dialect === "positional"
+    ? [transactionHash]
+    : [{ txId: transactionHash }];
+}
+
+function eligibleForPositionalRetry(reply: RpcResponse): boolean {
+  return reply.error?.code === -32602 || reply.error?.code === -32603;
+}
+
+async function lookupStatus(
+  input: VerifyInput,
+  transactionHash: string
+): Promise<{ reply: RpcResponse; dialect: TransactionStatusDialect }> {
+  const dialect = initialDialect(input.rpcProfile);
+  const reply = await rpc(
+    input.rpcUrl.trim(),
+    "gen_getTransactionStatus",
+    statusParams(dialect, transactionHash)
+  );
+
+  if (
+    input.rpcProfile === "custom" &&
+    input.customCompatibilityMode === "auto" &&
+    dialect === "object" &&
+    eligibleForPositionalRetry(reply)
+  ) {
+    return {
+      reply: await rpc(input.rpcUrl.trim(), "gen_getTransactionStatus", [
+        transactionHash
+      ]),
+      dialect: "positional"
+    };
+  }
+
+  return { reply, dialect };
+}
+
 async function lookupReceipt(
   rpcUrl: string,
   transactionHash: string
-): Promise<Pick<ExperimentVerification, "receiptAvailable" | "observedRecipient">> {
+): Promise<{
+  receiptCapability: RpcCapability;
+  receiptAvailable: boolean;
+  observedRecipient: string;
+}> {
   try {
     const reply = await rpc(rpcUrl, "gen_getTransactionReceipt", [
       { txId: transactionHash }
     ]);
 
-    if (reply.error || reply.result === null || reply.result === undefined) {
-      return { receiptAvailable: false, observedRecipient: "" };
+    if (reply.error?.code === -32601) {
+      return {
+        receiptCapability: "unsupported",
+        receiptAvailable: false,
+        observedRecipient: ""
+      };
+    }
+
+    if (reply.error) {
+      return {
+        receiptCapability: "unavailable",
+        receiptAvailable: false,
+        observedRecipient: ""
+      };
     }
 
     return {
-      receiptAvailable: true,
+      receiptCapability: "available",
+      receiptAvailable: reply.result !== null && reply.result !== undefined,
       observedRecipient: findString(reply.result, ["recipient", "to"])
     };
   } catch {
-    return { receiptAvailable: false, observedRecipient: "" };
+    return {
+      receiptCapability: "unavailable",
+      receiptAvailable: false,
+      observedRecipient: ""
+    };
   }
 }
 
@@ -213,11 +293,16 @@ async function lookupContract(
   rpcUrl: string,
   manualContractAddress: string
 ): Promise<{
+  contractStateCapability: RpcCapability;
   contractLookup: ContractLookupResult;
   contractStateResult: string;
 }> {
   if (!manualContractAddress) {
-    return { contractLookup: "not_checked", contractStateResult: "" };
+    return {
+      contractStateCapability: "not_checked",
+      contractLookup: "not_checked",
+      contractStateResult: ""
+    };
   }
 
   try {
@@ -225,20 +310,41 @@ async function lookupContract(
       { address: manualContractAddress }
     ]);
 
+    if (reply.error?.code === -32601) {
+      return {
+        contractStateCapability: "unsupported",
+        contractLookup: "not_checked",
+        contractStateResult: ""
+      };
+    }
+
     if (isNotFound(reply)) {
-      return { contractLookup: "not_found", contractStateResult: "" };
+      return {
+        contractStateCapability: "available",
+        contractLookup: "not_found",
+        contractStateResult: ""
+      };
     }
 
     if (reply.error || typeof reply.result !== "string") {
-      return { contractLookup: "unavailable", contractStateResult: "" };
+      return {
+        contractStateCapability: "unavailable",
+        contractLookup: "unavailable",
+        contractStateResult: ""
+      };
     }
 
     return {
+      contractStateCapability: "available",
       contractLookup: "found",
       contractStateResult: reply.result
     };
   } catch {
-    return { contractLookup: "unavailable", contractStateResult: "" };
+    return {
+      contractStateCapability: "unavailable",
+      contractLookup: "unavailable",
+      contractStateResult: ""
+    };
   }
 }
 
@@ -246,11 +352,9 @@ function resultFromComparison(statusMatchesManual: boolean | null) {
   if (statusMatchesManual === false) {
     return "mismatch" as const;
   }
-
   if (statusMatchesManual === true) {
     return "verified" as const;
   }
-
   return "observed" as const;
 }
 
@@ -266,49 +370,68 @@ export async function verifyGenLayerTransaction(
     return { ...base, errorMessage: urlError };
   }
 
-  if (!transactionHash.startsWith("0x")) {
+  if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
     return {
       ...base,
-      errorMessage: "Transaction hash must start with 0x."
+      errorMessage: "Transaction hash must be a 32-byte 0x-prefixed hexadecimal value."
+    };
+  }
+
+  if (
+    manualContractAddress &&
+    !/^0x[a-fA-F0-9]{40}$/.test(manualContractAddress)
+  ) {
+    return {
+      ...base,
+      errorMessage: "Contract address must be a 20-byte 0x-prefixed hexadecimal value."
     };
   }
 
   try {
-    const statusReply = await rpc(base.rpcUrl, "gen_getTransactionStatus", [
-      { txId: transactionHash }
-    ]);
+    const status = await lookupStatus(input, transactionHash);
 
-    if (isNotFound(statusReply)) {
+    if (isNotFound(status.reply)) {
       return {
         ...base,
+        transactionStatusDialect: status.dialect,
         result: "not_found",
         errorMessage: "The transaction was not found by this RPC endpoint."
       };
     }
 
-    if (statusReply.error) {
+    if (status.reply.error || status.reply.result === undefined) {
       return {
         ...base,
+        transactionStatusDialect: status.dialect,
         result: "unavailable",
         errorMessage: "The transaction status lookup was unavailable."
       };
     }
 
-    const observed = readStatus(statusReply.result);
+    const observed = readStatus(status.reply.result);
     const comparable = comparableStatus(observed.raw);
     const statusMatchesManual = comparable
       ? comparable === input.manualStatus
       : null;
-    const [receipt, contract] = await Promise.all([
-      lookupReceipt(base.rpcUrl, transactionHash),
-      lookupContract(base.rpcUrl, manualContractAddress)
-    ]);
+    const optionalMethods = input.rpcProfile === "studionet"
+      ? {
+          receiptCapability: "unsupported" as const,
+          receiptAvailable: false,
+          observedRecipient: "",
+          contractStateCapability: "unsupported" as const,
+          contractLookup: "not_checked" as const,
+          contractStateResult: ""
+        }
+      : {
+          ...(await lookupReceipt(base.rpcUrl, transactionHash)),
+          ...(await lookupContract(base.rpcUrl, manualContractAddress))
+        };
 
     return {
       ...base,
-      ...receipt,
-      ...contract,
+      ...optionalMethods,
       transactionFound: true,
+      transactionStatusDialect: status.dialect,
       observedStatus: observed.raw || "Available (status label not returned)",
       observedStatusCode: observed.code,
       statusMatchesManual,

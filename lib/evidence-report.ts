@@ -35,9 +35,12 @@ export function buildEvidencePackMarkdown({
     : "No experiment selected. This evidence pack does not include Studio deployment details.\n";
   const verification = experiment?.verification;
   const verificationSection = verification ? `\n## Read-only verification
+- **RPC profile:** ${verification.rpcProfile}
 - **Source RPC:** ${verification.rpcUrl}
+- **Successful transaction-status dialect:** ${verification.transactionStatusDialect}
 - **Checked at:** ${formatDate(verification.checkedAt)}
 - **Transaction found:** ${verification.transactionFound ? "Yes" : "No"}
+- **Receipt capability:** ${verification.receiptCapability}
 - **Receipt available:** ${verification.receiptAvailable ? "Yes" : "No"}
 - **Observed status:** ${verification.observedStatus || "Not available"}
 - **Manual status:** ${experiment.status}
@@ -45,12 +48,13 @@ export function buildEvidencePackMarkdown({
 - **Receipt recipient:** ${verification.observedRecipient || "Not available"}
 - **Recipient meaning:** Receipt routing only; not proof of the deployed contract address.
 - **Manual contract address:** ${experiment.deployedContractAddress || "Not recorded"}
+- **Contract-state capability:** ${verification.contractStateCapability}
 - **Contract-state lookup:** ${verification.contractLookup}
 - **Contract-state endpoint returned a string:** ${verification.contractLookup === "found" ? "Yes" : "No"}
 - **Contract lookup meaning:** A returned string does not prove authorship or contract behavior.
 - **Result:** ${verification.result}
 ${verification.errorMessage ? `- **Error:** ${verification.errorMessage}\n` : ""}
-This is an RPC observation, not GenLayer Builder Portal acceptance or reward eligibility.\n` : "";
+${verification.rpcProfile === "studionet" && verification.result === "verified" ? "Studionet verified the lifecycle status. Receipt and contract-state RPC methods are not exposed by this endpoint.\n" : ""}Lifecycle verification does not prove authorship or contract behavior. This is not GenLayer Builder Portal acceptance or reward eligibility.\n` : "";
 
   return `# ${valueOrPrompt(evidencePack.title, "Contribution title")}
 

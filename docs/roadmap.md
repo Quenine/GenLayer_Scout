@@ -18,13 +18,13 @@
 ## v0.2 - Read-only verification (completed)
 
 - Studionet, Bradbury, Asimov, and Custom RPC presets
-- Correct object-form transaction status and receipt requests
-- Optional object-form contract-state lookup for the manual address
+- Profile-specific status dialects: confirmed positional Studionet and documented object-form Bradbury/Asimov/Custom
+- Capability-aware receipt and contract-state checks, with Studionet methods explicitly unsupported
 - Honest `verified`, `observed`, `mismatch`, `not_found`, `unavailable`, and `manual_only` outcomes
 - Raw status and status-code preservation
 - Receipt recipient separated from contract lookup
 - HTTP(S) and transaction-hash validation, 12-second request timeout, and safe errors
-- Verification observations in backups and evidence Markdown
+- RPC profile, successful dialect, and capability metadata in backups and evidence Markdown
 - Exact request-body, comparison, observation, contract lookup, storage migration, and evidence-report tests
 - Push and pull-request verification workflow
 

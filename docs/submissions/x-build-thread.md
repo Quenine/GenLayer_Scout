@@ -15,3 +15,5 @@
 7/ v0.2 now includes a read-only verifier with observed, verified, mismatch, not-found, and unavailable outcomes.
 
 TODO: attach real screenshots or a short walkthrough before posting.
+
+8/ Live compatibility finding: Studionet accepts positional lifecycle-status params. Scout skips its unsupported receipt/contract-state methods and exports the profile, successful dialect, capabilities, and scope boundary.

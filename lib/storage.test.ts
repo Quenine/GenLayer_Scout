@@ -24,6 +24,10 @@ const experiment = {
 const verification: ExperimentVerification = {
   source: "genlayer-rpc",
   rpcUrl: "https://rpc",
+  rpcProfile: "custom",
+  transactionStatusDialect: "object",
+  receiptCapability: "available",
+  contractStateCapability: "available",
   checkedAt: "2026-01-01",
   transactionFound: true,
   receiptAvailable: true,

@@ -86,3 +86,5 @@ v0.2 implements a read-only RPC verifier that distinguishes manual records, comp
 - [ ] TODO: add screenshot or recording of Markdown generation
 - [ ] TODO: add browser QA notes
 - [ ] TODO: remove all TODO placeholders before Portal submission
+
+Studionet compatibility is explicit: positional lifecycle-status parameters, no calls to its unsupported receipt or contract-state methods, and persisted dialect/capability metadata for reviewers.

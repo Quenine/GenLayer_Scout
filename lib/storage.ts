@@ -3,6 +3,9 @@ import {
   BUILD_LOG_ENTRY_TYPES,
   CONTRIBUTION_LANE_STATUSES,
   CONTRACT_LOOKUP_RESULTS,
+  RPC_CAPABILITIES,
+  RPC_PROFILES,
+  TRANSACTION_STATUS_DIALECTS,
   EXPERIMENT_STATUSES,
   VERIFICATION_RESULTS,
   type BuildLogEntry,
@@ -101,6 +104,34 @@ function normalizeVerification(value: unknown): ExperimentVerification | null {
     return null;
   }
 
+  const inferredProfile = value.rpcUrl === "https://studio.genlayer.com/api"
+    ? "studionet"
+    : "custom";
+  const rpcProfile = isString(value.rpcProfile) &&
+    RPC_PROFILES.includes(value.rpcProfile as ExperimentVerification["rpcProfile"])
+    ? value.rpcProfile as ExperimentVerification["rpcProfile"]
+    : inferredProfile;
+  const transactionStatusDialect =
+    isString(value.transactionStatusDialect) &&
+    TRANSACTION_STATUS_DIALECTS.includes(
+      value.transactionStatusDialect as ExperimentVerification["transactionStatusDialect"]
+    )
+      ? value.transactionStatusDialect as ExperimentVerification["transactionStatusDialect"]
+      : rpcProfile === "studionet" ? "positional" : "object";
+  const receiptCapability = isString(value.receiptCapability) &&
+    RPC_CAPABILITIES.includes(
+      value.receiptCapability as ExperimentVerification["receiptCapability"]
+    )
+    ? value.receiptCapability as ExperimentVerification["receiptCapability"]
+    : rpcProfile === "studionet"
+      ? "unsupported"
+      : value.receiptAvailable ? "available" : "not_checked";
+  const contractStateCapability = isString(value.contractStateCapability) &&
+    RPC_CAPABILITIES.includes(
+      value.contractStateCapability as ExperimentVerification["contractStateCapability"]
+    )
+    ? value.contractStateCapability as ExperimentVerification["contractStateCapability"]
+    : rpcProfile === "studionet" ? "unsupported" : "not_checked";
   const observedRecipient = isString(value.observedRecipient)
     ? value.observedRecipient
     : stringField(value, "observedContractAddress");
@@ -118,6 +149,10 @@ function normalizeVerification(value: unknown): ExperimentVerification | null {
   return {
     source: "genlayer-rpc",
     rpcUrl: value.rpcUrl,
+    rpcProfile,
+    transactionStatusDialect,
+    receiptCapability,
+    contractStateCapability,
     checkedAt: value.checkedAt,
     transactionFound: value.transactionFound,
     receiptAvailable: value.receiptAvailable,

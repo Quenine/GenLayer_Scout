@@ -8,11 +8,11 @@ import {
   RPC_PRESETS,
   verifyGenLayerTransaction
 } from "@/lib/genlayer-verifier";
-import type { ExperimentVerification } from "@/lib/types";
+import type { ExperimentVerification, RpcProfile } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 const CUSTOM_RPC = "custom";
-type RpcPreset = keyof typeof RPC_PRESETS | typeof CUSTOM_RPC;
+type RpcPreset = RpcProfile;
 
 function comparisonLabel(value: boolean | null) {
   if (value === null) {
@@ -32,6 +32,8 @@ export default function VerifyPage() {
   const [id, setId] = useState("");
   const [rpcPreset, setRpcPreset] = useState<RpcPreset>("studionet");
   const [rpcUrl, setRpcUrl] = useState<string>(RPC_PRESETS.studionet);
+  const [customCompatibilityMode, setCustomCompatibilityMode] =
+    useState<"object" | "auto">("auto");
   const [hash, setHash] = useState("");
   const [address, setAddress] = useState("");
   const [result, setResult] = useState<ExperimentVerification>();
@@ -62,6 +64,8 @@ export default function VerifyPage() {
     setChecking(true);
     const next = await verifyGenLayerTransaction({
       rpcUrl,
+      rpcProfile: rpcPreset,
+      customCompatibilityMode,
       transactionHash: hash,
       manualStatus: experiment.status,
       manualContractAddress: address
@@ -125,6 +129,23 @@ export default function VerifyPage() {
               placeholder="https://your-genlayer-rpc.example"
             />
           </label>
+          {rpcPreset === CUSTOM_RPC && (
+            <label>
+              <span className="label">Custom compatibility</span>
+              <select
+                className="field"
+                value={customCompatibilityMode}
+                onChange={(event) =>
+                  setCustomCompatibilityMode(
+                    event.target.value as "object" | "auto"
+                  )
+                }
+              >
+                <option value="auto">Auto compatibility</option>
+                <option value="object">Documented object form only</option>
+              </select>
+            </label>
+          )}
           <label>
             <span className="label">Transaction hash for this check</span>
             <input
@@ -189,6 +210,12 @@ export default function VerifyPage() {
             <div className="bg-white p-5">
               <h3 className="label">Observed values</h3>
               <p className="text-sm">
+                RPC profile: <strong>{result.rpcProfile}</strong>
+              </p>
+              <p className="mt-2 text-sm">
+                Request dialect: {result.transactionStatusDialect}
+              </p>
+              <p className="mt-2 text-sm">
                 Result: <strong className="capitalize">{result.result.replace("_", " ")}</strong>
               </p>
               <p className="mt-2 text-sm">
@@ -199,7 +226,7 @@ export default function VerifyPage() {
                 {` (match: ${comparisonLabel(result.statusMatchesManual)})`}
               </p>
               <p className="mt-2 text-sm">
-                Receipt: {result.receiptAvailable ? "Available" : "Unavailable"}
+                Receipt capability: {result.receiptCapability.replace("_", " ")}
               </p>
               <div className="mt-3">
                 <CopyableValue
@@ -209,6 +236,9 @@ export default function VerifyPage() {
                 />
               </div>
               <p className="mt-2 text-sm">
+                Contract-state capability: {result.contractStateCapability.replace("_", " ")}
+              </p>
+              <p className="mt-2 text-sm">
                 Contract-state lookup: {result.contractLookup.replace("_", " ")}
               </p>
               {result.contractLookup === "found" && (
@@ -217,6 +247,15 @@ export default function VerifyPage() {
                   not prove authorship or contract behavior.
                 </p>
               )}
+              {result.rpcProfile === "studionet" && result.result === "verified" && (
+                <p className="mt-3 rounded-lg bg-sky-50 p-3 text-sm text-sky-800">
+                  Studionet verified the lifecycle status. Receipt and contract-state
+                  RPC methods are not exposed by this endpoint.
+                </p>
+              )}
+              <p className="mt-3 text-sm text-slate-600">
+                Lifecycle verification does not prove authorship or contract behavior.
+              </p>
               {result.errorMessage && (
                 <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
                   {result.errorMessage}
