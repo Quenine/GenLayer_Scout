@@ -1,4 +1,4 @@
-# GenLayer Scout Demo Script
+﻿# GenLayer Scout Demo Script
 
 Target length: 60 to 90 seconds.
 
@@ -57,4 +57,4 @@ Return to dashboard:
 
 ## Close, 5 seconds
 
-"The next milestone is a v0.2 read-only Intelligent Contract verifier, but only after supported verification semantics are confirmed. Until then, Scout stays honest: local-first, manual, evidence-focused."
+"v0.2 adds conservative read-only RPC observation while Scout stays local-first and evidence-focused. Receipt recipients are not contract proof, and non-comparable statuses remain observed."

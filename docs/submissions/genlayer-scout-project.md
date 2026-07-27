@@ -1,4 +1,4 @@
-# GenLayer Scout - Project Submission Draft
+﻿# GenLayer Scout - Project Submission Draft
 
 ## Project title
 
@@ -65,8 +65,8 @@ Suggested items to verify:
 
 ## Known limitations
 
-- No live GenLayer API integration
-- No transaction or contract verification
+- No write-capable GenLayer or Portal integration
+- No proof of contract authorship, behavior, or Portal acceptance
 - No Portal submission integration
 - One evidence draft at a time
 - Browser-local storage only
@@ -74,7 +74,7 @@ Suggested items to verify:
 
 ## Next milestone
 
-v0.2 should explore a read-only Intelligent Contract verifier, but only after supported GenLayer verification semantics are confirmed. The verifier should clearly distinguish manual records from externally checked observations.
+v0.2 implements a read-only RPC verifier that distinguishes manual records, comparable verification, non-comparable observations, receipt recipients, and contract-state lookup results.
 
 ## Evidence checklist
 

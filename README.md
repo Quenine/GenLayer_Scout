@@ -1,6 +1,6 @@
 ﻿# GenLayer Scout
 
-GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds an optional read-only RPC observation path through the Verify route. It calls `gen_getTransactionStatus` and `gen_getTransactionReceipt` against an endpoint you provide, never signs or submits transactions, and does not represent Builder Portal acceptance or reward eligibility.
+GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds an optional read-only RPC observation path through the Verify route. It calls `gen_getTransactionStatus` and `gen_getTransactionReceipt` with object-form transaction parameters and can optionally call `gen_getContractState` for the manually recorded address. It never signs or submits transactions and does not represent Builder Portal acceptance or reward eligibility.
 
 Verification stays separate from manual values and is included in backups and evidence Markdown. Manual evidence remains necessary because RPC results cannot establish source, intent, reproduction steps, screenshots, authorship, or Portal review outcomes. Run `npm run test` for tests or `npm run verify` for lint, tests, and the production build. See [verification notes](docs/verification-notes.md).
 
@@ -8,7 +8,7 @@ Verification stays separate from manual values and is included in backups and ev
 
 GenLayer Studio is a developer environment for writing, deploying, and testing Python Intelligent Contracts. The work required for a useful contribution often extends beyond the contract itself: builders need to preserve what they tested, which transaction reached accepted, consensus, or finalized state, where the evidence lives, and how the work fits a Portal contribution category.
 
-Scout provides one small local workspace for that record-keeping. It is deliberately manual in v0.1.1 so the provenance of every value is clear.
+Scout provides one small local workspace for that record-keeping. v0.2 keeps manual records separate from optional read-only RPC observations so their provenance remains clear.
 
 ## v0.1.1 scope
 
@@ -41,19 +41,13 @@ Scout stores one versioned JSON workspace under `genlayer-scout.workspace.v1` in
 
 The export action wraps that workspace in a JSON backup file with app name, schema version, and export timestamp. Import validates the JSON before replacing the current browser workspace.
 
-## What it does not do
+## v0.2 verification behavior
 
-Scout v0.1.1 does not:
+The Verify route defaults to Studionet and offers Bradbury, Asimov, and Custom RPC presets. It requires an HTTP(S) endpoint and a `0x`-prefixed transaction hash, applies a 12-second timeout, and stores only safe error messages.
 
-- connect to GenLayer Studio
-- query or verify a contract address or transaction hash
-- determine whether a transaction is actually accepted, in consensus, finalized, or failed
-- read from or submit to the GenLayer Portal
-- predict points, eligibility, review outcomes, or rewards
-- provide authentication, cloud backup, synchronization, or team access
-- store multiple evidence drafts yet
+`verified` requires at least one successful safe status comparison and no failed comparison. Valid but non-comparable lifecycle or unknown statuses are `observed`. Receipt recipients are labeled as recipients and never used as contract-address proof. The optional contract-state lookup records only whether the endpoint returned a string for the manual address; `found` does not prove authorship or behavior.
 
-Every experiment and evidence value is entered by the builder and must be checked against its original source. The readiness checklist only checks whether the local draft appears complete enough to review; it does not verify truth, Portal eligibility, or acceptance.
+Scout still does not connect to Studio, write to a network, read from or submit to the Portal, prove source code or behavior, predict outcomes or rewards, authenticate users, synchronize data, or provide team access. The readiness checklist measures local completeness, not truth or Portal acceptance.
 
 ## Setup
 
@@ -87,6 +81,7 @@ app/
   evidence/           Evidence pack route
   opportunities/      Contribution lane route
   runs/               Contract experiment route
+  verify/             Read-only RPC observation route
 components/
   build-log/          Build log form
   dashboard/          Dashboard summary components
@@ -97,6 +92,7 @@ lib/
   dashboard.ts        Derived dashboard statistics
   evidence-quality.ts Evidence readiness and placeholder warning logic
   evidence-report.ts  Markdown report generation
+  genlayer-verifier.ts Validated read-only RPC requests and result semantics
   seed-data.ts        Supplied contribution category reference data
   storage.ts          Workspace parsing, validation, load, save, backup logic
   types.ts            Domain types and literal constants
@@ -160,6 +156,4 @@ Before treating a generated pack as submission-ready, verify:
 
 ## Roadmap
 
-The current roadmap is maintained in [docs/roadmap.md](docs/roadmap.md). The next major product target is a v0.2 GenLayer Intelligent Contract verifier, but only as a clearly labeled read-only/manual-assist feature after supported verification semantics are confirmed. Scout should continue to distinguish manual records from externally checked data.
-
-
+The current roadmap is maintained in [docs/roadmap.md](docs/roadmap.md). v0.2 read-only verification is complete. Later work remains constrained by the same principle: manual records, RPC observations, and any future authoritative integrations must stay visibly distinct.

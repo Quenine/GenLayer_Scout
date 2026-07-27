@@ -1,6 +1,6 @@
 ﻿# Browser QA Checklist
 
-Use this checklist before tagging or submitting a v0.1.1 build. These steps assume no live GenLayer API integration; every value is manually entered.
+Use this checklist before tagging or submitting the current build. Manual records remain local; the Verify route adds only optional read-only RPC observations.
 
 ## First load
 

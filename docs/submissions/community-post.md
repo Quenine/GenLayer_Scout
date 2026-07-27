@@ -1,4 +1,4 @@
-# Community Post Draft
+﻿# Community Post Draft
 
 I have been working on GenLayer Scout, a local-first workspace for organizing GenLayer Builder Portal submission evidence.
 
@@ -14,7 +14,7 @@ Scout helps with that workflow by keeping:
 - Markdown export for review
 - JSON backup/import for local testing
 
-It is intentionally manual right now. There is no live GenLayer API integration, no transaction verification, no Portal submission automation, and no point prediction.
+It remains local-first, with optional conservative read-only RPC observation in v0.2. There is no Portal submission automation, contract-behavior proof, or point prediction.
 
 I would appreciate feedback from builders on the evidence checklist especially:
 

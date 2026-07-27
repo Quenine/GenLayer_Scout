@@ -2,6 +2,7 @@
 import {
   BUILD_LOG_ENTRY_TYPES,
   CONTRIBUTION_LANE_STATUSES,
+  CONTRACT_LOOKUP_RESULTS,
   EXPERIMENT_STATUSES,
   VERIFICATION_RESULTS,
   type BuildLogEntry,
@@ -77,10 +78,59 @@ function normalizeContractExperiment(value: unknown): ContractExperiment | null 
 }
 
 function normalizeVerification(value: unknown): ExperimentVerification | null {
-  if (!isRecord(value) || value.source !== "genlayer-rpc" || !isString(value.rpcUrl) || !isString(value.checkedAt) || typeof value.transactionFound !== "boolean" || typeof value.receiptAvailable !== "boolean" || !isString(value.observedStatus) || !(typeof value.observedStatusCode === "number" || value.observedStatusCode === null) || !(typeof value.statusMatchesManual === "boolean" || value.statusMatchesManual === null) || !isString(value.observedContractAddress) || !(typeof value.addressMatchesManual === "boolean" || value.addressMatchesManual === null) || !isString(value.result) || !VERIFICATION_RESULTS.includes(value.result as ExperimentVerification["result"]) || !isString(value.errorMessage)) return null;
-  return value as unknown as ExperimentVerification;
-}
+  if (
+    !isRecord(value) ||
+    value.source !== "genlayer-rpc" ||
+    !isString(value.rpcUrl) ||
+    !isString(value.checkedAt) ||
+    typeof value.transactionFound !== "boolean" ||
+    typeof value.receiptAvailable !== "boolean" ||
+    !isString(value.observedStatus) ||
+    !(
+      typeof value.observedStatusCode === "number" ||
+      value.observedStatusCode === null
+    ) ||
+    !(
+      typeof value.statusMatchesManual === "boolean" ||
+      value.statusMatchesManual === null
+    ) ||
+    !isString(value.result) ||
+    !VERIFICATION_RESULTS.includes(value.result as ExperimentVerification["result"]) ||
+    !isString(value.errorMessage)
+  ) {
+    return null;
+  }
 
+  const observedRecipient = isString(value.observedRecipient)
+    ? value.observedRecipient
+    : stringField(value, "observedContractAddress");
+  const contractLookup = isString(value.contractLookup) &&
+    CONTRACT_LOOKUP_RESULTS.includes(
+      value.contractLookup as ExperimentVerification["contractLookup"]
+    )
+    ? value.contractLookup as ExperimentVerification["contractLookup"]
+    : "not_checked";
+  const result = value.result === "verified" &&
+    value.statusMatchesManual !== true
+    ? "observed"
+    : value.result as ExperimentVerification["result"];
+
+  return {
+    source: "genlayer-rpc",
+    rpcUrl: value.rpcUrl,
+    checkedAt: value.checkedAt,
+    transactionFound: value.transactionFound,
+    receiptAvailable: value.receiptAvailable,
+    observedStatus: value.observedStatus,
+    observedStatusCode: value.observedStatusCode,
+    statusMatchesManual: value.statusMatchesManual,
+    observedRecipient,
+    contractLookup,
+    contractStateResult: stringField(value, "contractStateResult"),
+    result,
+    errorMessage: value.errorMessage
+  };
+}
 function normalizeArray<T>(values: unknown, normalize: (value: unknown) => T | null) {
   if (!Array.isArray(values)) return null;
   const normalized = values.map(normalize);
@@ -361,4 +411,3 @@ export function parseBackupFile(contents: string): {
     };
   }
 }
-

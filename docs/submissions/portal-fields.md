@@ -1,4 +1,4 @@
-# Portal Fields Draft
+﻿# Portal Fields Draft
 
 ## Title
 
@@ -10,7 +10,7 @@ Projects
 
 ## Description
 
-GenLayer Scout is a local-first dashboard for GenLayer contributors preparing Builder Portal submissions. It helps builders manually track Studio contract experiments, contribution lanes, build notes, and evidence packs without claiming live GenLayer API integration.
+GenLayer Scout is a local-first dashboard for GenLayer contributors preparing Builder Portal submissions. It helps builders manually track Studio contract experiments, contribution lanes, build notes, and evidence packs with an optional, clearly labeled read-only GenLayer RPC observation path.
 
 The v0.1.1 app includes a contract experiment ledger, contribution opportunity tracker, evidence pack generator, submission readiness checklist, quality guard for vague placeholder text, build log, and JSON backup/import flow.
 
@@ -39,7 +39,7 @@ Scout is intended to make submissions easier to review by separating evidence fr
 
 ## Roadmap
 
-- v0.2: explore a read-only Intelligent Contract verifier after supported GenLayer verification semantics are confirmed
+- v0.2: completed read-only RPC observation with conservative comparison semantics
 - Improve evidence completeness checks
 - Support multiple named evidence packs
 - Link build log entries to experiments and evidence packs

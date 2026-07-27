@@ -1,83 +1,50 @@
-# GenLayer Scout Roadmap
+﻿# GenLayer Scout roadmap
 
-The roadmap favors local workflow reliability before external integration. Scout should remain useful even when every value is manually entered.
-
-## v0.2 - Read-only verification (implemented)
-
-- Query a user-selected GenLayer RPC without wallet signing.
-- Store status and receipt observations separately from manual records.
-- Report matches, mismatches, not-found results, and endpoint failures honestly.
-- Include observations in evidence Markdown and backward-compatible backups.
-- Cover reports, storage migration, and RPC behavior with Vitest (`npm run test`; full checks: `npm run verify`).
-
-This cannot validate source code, contract behavior, authorship, Portal acceptance, eligibility, points, or rewards. Manual evidence remains necessary.
-
-## v0.1 - Local builder record
+## v0.1 - Local builder record (completed)
 
 - Manual contract experiment ledger
-- Supplied contribution category reference list and planning states
-- Single evidence pack draft with Markdown export
-- Dated build log
-- Versioned browser local-storage persistence
-- Corrupted-storage recovery and workspace reset
+- Contribution lane planning
+- Evidence-pack Markdown export
+- Build log and versioned local storage
 
-## v0.1.1 - Product hardening
+## v0.1.1 - Product hardening (completed)
 
-- Edit existing contract experiments while preserving `createdAt` and updating `updatedAt`
-- Copy controls for deployed contract addresses and transaction hashes
-- Long address/hash wrapping for desktop and mobile layouts
-- Single full-workspace JSON export/import with runtime validation
-- Evidence pack generation from a selected contract experiment
-- Copy Markdown and download Markdown actions
-- Generated date and manual-evidence note in the Markdown report
-- First-use panel explaining the local-first workflow
-- Browser QA checklist for the main v0.1.1 flows
+- Experiment editing and copy controls
+- Responsive long-value handling
+- Validated JSON backup/import and legacy migration
+- Evidence readiness and quality guidance
+- Browser QA checklist
 
-## v0.2 - GenLayer Intelligent Contract verifier
+## v0.2 - Read-only verification (completed)
 
-Goal: help builders check manually recorded Intelligent Contract evidence without pretending Scout has Portal authority.
+- Studionet, Bradbury, Asimov, and Custom RPC presets
+- Correct object-form transaction status and receipt requests
+- Optional object-form contract-state lookup for the manual address
+- Honest `verified`, `observed`, `mismatch`, `not_found`, `unavailable`, and `manual_only` outcomes
+- Raw status and status-code preservation
+- Receipt recipient separated from contract lookup
+- HTTP(S) and transaction-hash validation, 12-second request timeout, and safe errors
+- Verification observations in backups and evidence Markdown
+- Exact request-body, comparison, observation, contract lookup, storage migration, and evidence-report tests
+- Push and pull-request verification workflow
 
-Possible scope, pending confirmed interfaces and semantics:
-
-- Read-only verifier for a manually entered contract address and transaction hash
-- Clear result states: verified, not found, unavailable, or manually recorded only
-- Side-by-side display of user-entered values and verifier observations
-- Evidence completeness checks that do not estimate Portal points or review outcomes
-- Exportable verifier notes inside evidence packs
-
-Do not start this work until an official supported source for verification is confirmed.
+v0.2 remains read-only. It cannot establish authorship, contract behavior, Portal acceptance, eligibility, points, or rewards.
 
 ## Later local workflow improvements
 
-- Save multiple named evidence packs
-- Link build log entries to experiments and evidence packs
-- Structured test case records with input, expected result, observed result, and evidence link
-- Milestone snapshots and diffs
-- Benchmark result collections
-- Reusable evidence templates by contribution category
-- Improve keyboard navigation and complete an accessibility review
+- Multiple named evidence packs
+- Links between build-log entries, experiments, and evidence packs
+- Structured test-case records and milestone snapshots
+- Accessibility review
 
 ## Future integration criteria
 
-A GenLayer or Portal integration should only be proposed after confirming:
-
-1. An official supported interface exists.
-2. The meaning and lifecycle of returned transaction states are documented.
-3. Read and write permissions are explicit.
-4. Errors, stale data, and unavailable services can be represented honestly.
-5. Manual records remain distinguishable from externally verified data.
-
-Potential work after those criteria are met:
-
-- Read-only transaction lookup
-- Contract address and transaction hash verification
-- Import of selected Studio or network evidence
-- Portal submission handoff through an official supported path
+Any write integration or Portal handoff requires an official supported interface, explicit permissions, documented lifecycle semantics, honest failure states, and continued separation between manual and externally observed data.
 
 ## Product principles
 
 1. Never present manually entered data as verified network data.
-2. Keep source evidence separate from the narrative generated from it.
+2. Keep source evidence separate from generated narrative.
 3. Do not estimate Portal points or review outcomes.
 4. Preserve a useful local-only mode.
 5. Prefer exportable, inspectable data over opaque automation.

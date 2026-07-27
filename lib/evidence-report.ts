@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ContractExperiment,
   ContributionLane,
   EvidencePack
@@ -42,9 +42,12 @@ export function buildEvidencePackMarkdown({
 - **Observed status:** ${verification.observedStatus || "Not available"}
 - **Manual status:** ${experiment.status}
 - **Status match:** ${verification.statusMatchesManual === null ? "Not comparable" : verification.statusMatchesManual ? "Yes" : "No"}
-- **Observed contract/recipient address:** ${verification.observedContractAddress || "Not available"}
+- **Receipt recipient:** ${verification.observedRecipient || "Not available"}
+- **Recipient meaning:** Receipt routing only; not proof of the deployed contract address.
 - **Manual contract address:** ${experiment.deployedContractAddress || "Not recorded"}
-- **Address match:** ${verification.addressMatchesManual === null ? "Not comparable" : verification.addressMatchesManual ? "Yes" : "No"}
+- **Contract-state lookup:** ${verification.contractLookup}
+- **Contract-state endpoint returned a string:** ${verification.contractLookup === "found" ? "Yes" : "No"}
+- **Contract lookup meaning:** A returned string does not prove authorship or contract behavior.
 - **Result:** ${verification.result}
 ${verification.errorMessage ? `- **Error:** ${verification.errorMessage}\n` : ""}
 This is an RPC observation, not GenLayer Builder Portal acceptance or reward eligibility.\n` : "";
@@ -53,7 +56,7 @@ This is an RPC observation, not GenLayer Builder Portal acceptance or reward eli
 
 Generated: ${formatDate(generatedAt)}
 
-> Manual evidence note: this report was assembled from local GenLayer Scout records. Addresses, transaction hashes, observed states, screenshots, and links are not automatically verified by Scout.
+> Manual evidence note: this report was assembled from local GenLayer Scout records. RPC observations and safe comparisons are labeled below; screenshots, links, authorship, behavior, and Portal outcomes remain manual evidence.
 
 ## Contribution category
 ${contributionLane?.name ?? "_[Select a contribution category]_"}
