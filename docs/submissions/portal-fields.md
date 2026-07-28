@@ -221,3 +221,219 @@ During implementation, the documented object-form transaction-status request was
     }
   ]
 }
+```
+
+Studionet returned JSON-RPC error code `-32603`, indicating that the endpoint did not accept that parameter shape.
+
+The following positional request succeeded:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "gen_getTransactionStatus",
+  "params": [
+    "<transactionHash>"
+  ]
+}
+```
+
+The successful response returned:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "FINALIZED",
+  "id": 1
+}
+```
+
+Scout therefore uses an explicit Studionet compatibility profile and records the successful request dialect as part of the verification evidence.
+
+Raw database details from the failed response are intentionally not exposed in Scout or included in public documentation.
+
+## Evidence links
+
+### GitHub repository
+
+https://github.com/Quenine/GenLayer_Scout
+
+### Live application
+
+https://genlayer-scout.vercel.app
+
+### Live verification route
+
+https://genlayer-scout.vercel.app/verify
+
+### Repository compatibility finding
+
+https://github.com/Quenine/GenLayer_Scout/blob/main/docs/findings/studionet-rpc-compatibility.md
+
+### Repository verification notes
+
+https://github.com/Quenine/GenLayer_Scout/blob/main/docs/verification-notes.md
+
+### Repository roadmap
+
+https://github.com/Quenine/GenLayer_Scout/blob/main/docs/roadmap.md
+
+### Additional Portal attachments
+
+The submission should include:
+
+- Successful live verification screenshot
+- GenLayer Studio Faucet deployment screenshot
+- Studio lifecycle/finalization log screenshot
+- Generated evidence-pack screenshot
+- Test and production-build output screenshot
+
+## Testing and verification
+
+The project includes automated coverage for:
+
+### GenLayer RPC verification
+
+- Exact Studionet positional request body
+- Documented object-form requests for supported profiles
+- Matching `FINALIZED` lifecycle status
+- Lifecycle status mismatch
+- Non-comparable and pending lifecycle states
+- Unsupported RPC methods
+- Transaction not found
+- Network and HTTP failures
+- Safe error handling
+- Request timeout behavior
+- RPC URL validation
+- Transaction hash validation
+- Optional contract address validation
+- Compatibility metadata persistence
+- Prevention of raw internal error exposure
+
+### Evidence generation
+
+- Manual evidence warning
+- Selected experiment information
+- Read-only verification section
+- RPC profile and request dialect
+- Endpoint capability reporting
+- No-experiment behavior
+
+### Storage and migration
+
+- Current workspace backup parsing
+- Malformed JSON rejection
+- Invalid schema rejection
+- Legacy workspace migration
+- Legacy demo-record removal
+- Verification metadata validation
+- Compatibility metadata preservation
+- Experiments without verification remaining valid
+
+## Quality results
+
+- ESLint passed
+- Type checking passed
+- 24 automated tests passed
+- Production build passed
+- 9 static pages generated
+- GitHub verification workflow included
+- Vercel deployment succeeded
+- Real Studionet lifecycle verification succeeded
+
+The complete quality command is:
+
+```bash
+npm run verify
+```
+
+This runs:
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
+## Impact
+
+Scout improves the builder contribution workflow by separating raw technical evidence from submission narrative.
+
+Instead of reconstructing contract details, transaction hashes, screenshots, testing notes, and lifecycle observations at the end of a project, contributors can preserve those records while they build.
+
+This can help:
+
+- Builders prepare clearer and more complete Portal submissions
+- Reviewers distinguish manual claims from RPC-observed information
+- Contributors preserve reproducible Studio experiment details
+- New builders understand what useful submission evidence looks like
+- Accepted projects prepare stronger milestone updates
+- Ecosystem contributors document endpoint compatibility findings responsibly
+
+Scout is also designed to remain useful when an endpoint exposes only a limited RPC surface. It records what was successfully observed, what was unsupported, and what remains manually evidenced.
+
+## Limitations
+
+- Scout is local-first and stores workspace data in the user’s browser
+- There is no authentication, synchronization, cloud backup, or team collaboration
+- Manual experiment details and evidence links must still be entered by the builder
+- Lifecycle verification does not prove contract authorship
+- Lifecycle verification does not prove ownership
+- Lifecycle verification does not prove source-code provenance
+- Lifecycle verification does not prove contract behavior
+- Lifecycle verification does not prove that screenshots or repository links belong to the checked transaction
+- Studionet does not currently expose the tested receipt and contract-state RPC methods
+- Scout does not read from or submit directly to the Builder Portal
+- Scout does not predict contribution points
+- Scout does not predict acceptance
+- Scout does not make eligibility or reward claims
+- The current workspace supports one active evidence-pack draft at a time
+
+## Roadmap
+
+### Next local workflow milestone
+
+- Support multiple named evidence packs
+- Link build-log entries to experiments
+- Link build-log entries to evidence packs
+- Add structured test-case records
+- Support milestone snapshots and diffs
+- Add reusable templates for different Portal contribution categories
+
+### RPC and verification improvements
+
+- Continue testing Bradbury and Asimov RPC behavior
+- Preserve endpoint capability observations over time
+- Add optional benchmark result collections
+- Improve lifecycle observation history
+- Add clearer comparison between previous and current verification checks
+
+### Ecosystem contribution work
+
+- Submit the reproducible Studionet RPC compatibility finding
+- Produce educational documentation for first-time GenLayer builders
+- Publish a technical walkthrough of the verification implementation
+- Explore reusable verification utilities for other GenLayer projects
+
+## Reviewer notes
+
+This submission should be reviewed as a local-first GenLayer builder evidence and verification workspace.
+
+It is not:
+
+- An official GenLayer product
+- A Builder Portal integration
+- A full blockchain explorer
+- A wallet application
+- A transaction submission tool
+- A contract authorship verifier
+- A contract behavior auditor
+- A points or rewards predictor
+
+The earlier version was rejected because it could not inspect the transactions or lifecycle states behind manually entered records.
+
+The current v0.2 release directly addresses that issue through a tested, working, read-only lifecycle verification path.
+
+A real GenLayer Studio Faucet transaction was successfully checked against Studionet. The RPC returned `FINALIZED`, matching the manually recorded `finalized` state, and Scout returned `Verified`.
+
+The project also adds automated tests around the exact areas requested in the previous review: evidence generation and storage migration.
