@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   createContext,
@@ -8,6 +8,7 @@ import {
   useMemo,
   useState
 } from "react";
+import { reconcileExperimentVerification } from "@/lib/experiment-verification";
 import { createEmptyWorkspace } from "@/lib/seed-data";
 import { loadWorkspace, saveWorkspace } from "@/lib/storage";
 import type {
@@ -78,7 +79,9 @@ export function ScoutProvider({ children }: { children: React.ReactNode }) {
     setWorkspace((current) => ({
       ...current,
       experiments: current.experiments.map((existing) =>
-        existing.id === experiment.id ? experiment : existing
+        existing.id === experiment.id
+          ? reconcileExperimentVerification(existing, experiment)
+          : existing
       )
     }));
   }, []);

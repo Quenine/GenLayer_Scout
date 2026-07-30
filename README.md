@@ -2,7 +2,7 @@
 
 GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds profile-aware, read-only lifecycle verification. Studionet uses its confirmed positional transaction-status dialect and skips receipt and contract-state methods because they are not exposed; Bradbury and Asimov use documented object-form requests; Custom supports object-only or conservative Auto compatibility.
 
-Verification persists the RPC profile, successful dialect, lifecycle comparison, and optional-method capabilities. Lifecycle verification is independent of receipt and contract-state support and does not prove authorship or contract behavior. Raw RPC response bodies are never exposed. See [verification notes](docs/verification-notes.md) and the [sanitized Studionet finding](docs/findings/studionet-rpc-compatibility.md).
+Verification persists the RPC profile, successful dialect, lifecycle comparison, and optional-method capabilities. In v0.2.1, every result is bound to a versioned historical snapshot of the checked transaction hash, contract address, and manual status. Editing any of those recorded experiment fields invalidates the saved result; unrelated metadata edits preserve it. Lifecycle verification is independent of receipt and contract-state support and does not prove authorship or contract behavior. Raw RPC response bodies are never exposed. See [verification notes](docs/verification-notes.md) and the [sanitized Studionet finding](docs/findings/studionet-rpc-compatibility.md).
 
 ## Why it exists
 

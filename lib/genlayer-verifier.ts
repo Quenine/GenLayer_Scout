@@ -185,6 +185,12 @@ function initialDialect(profile: RpcProfile): TransactionStatusDialect {
 function createBaseVerification(input: VerifyInput): ExperimentVerification {
   const unsupported = input.rpcProfile === "studionet";
   return {
+    snapshot: {
+      version: 1,
+      transactionHash: input.transactionHash.trim(),
+      contractAddress: input.manualContractAddress.trim(),
+      manualStatus: input.manualStatus
+    },
     source: "genlayer-rpc",
     rpcUrl: input.rpcUrl.trim(),
     rpcProfile: input.rpcProfile,

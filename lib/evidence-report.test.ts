@@ -3,74 +3,85 @@ import { createEmptyWorkspace } from "@/lib/seed-data";
 import { buildEvidencePackMarkdown } from "@/lib/evidence-report";
 import type { ContractExperiment, ExperimentVerification } from "@/lib/types";
 
+const SNAPSHOT_HASH = `0x${"a".repeat(64)}`;
+const CURRENT_HASH = `0x${"c".repeat(64)}`;
+const SNAPSHOT_ADDRESS = `0x${"b".repeat(40)}`;
+const CURRENT_ADDRESS = `0x${"d".repeat(40)}`;
 const workspace = createEmptyWorkspace();
+const verification: ExperimentVerification = {
+  snapshot: {
+    version: 1,
+    transactionHash: SNAPSHOT_HASH,
+    contractAddress: SNAPSHOT_ADDRESS,
+    manualStatus: "finalized"
+  },
+  source: "genlayer-rpc",
+  rpcUrl: "https://studio.genlayer.com/api",
+  rpcProfile: "studionet",
+  transactionStatusDialect: "positional",
+  receiptCapability: "unsupported",
+  contractStateCapability: "unsupported",
+  checkedAt: "2026-07-30T00:00:00.000Z",
+  transactionFound: true,
+  receiptAvailable: false,
+  observedStatus: "FINALIZED",
+  observedStatusCode: null,
+  statusMatchesManual: true,
+  observedRecipient: "",
+  contractLookup: "not_checked",
+  contractStateResult: "",
+  result: "verified",
+  errorMessage: ""
+};
 const experiment: ContractExperiment = {
   id: "e",
   contractName: "Scout contract",
   studioFileName: "scout.py",
-  deployedContractAddress: "0xabc",
-  transactionHash: "0xhash",
-  status: "finalized",
+  deployedContractAddress: CURRENT_ADDRESS,
+  transactionHash: CURRENT_HASH,
+  status: "accepted",
   experimentNotes: "",
   evidenceUrl: "",
   portalSubmissionNotes: "",
   createdAt: "2026-01-01",
-  updatedAt: "2026-01-01"
-};
-const verification: ExperimentVerification = {
-  source: "genlayer-rpc",
-  rpcUrl: "https://rpc",
-  rpcProfile: "custom",
-  transactionStatusDialect: "object",
-  receiptCapability: "available",
-  contractStateCapability: "available",
-  checkedAt: "2026-01-01",
-  transactionFound: true,
-  receiptAvailable: true,
-  observedStatus: "FINALIZED",
-  observedStatusCode: null,
-  statusMatchesManual: true,
-  observedRecipient: "0xrecipient",
-  contractLookup: "found",
-  contractStateResult: "0x",
-  result: "verified",
-  errorMessage: ""
+  updatedAt: "2026-01-01",
+  verification
 };
 
 describe("evidence report", () => {
   it("includes the manual note and selected experiment details", () => {
     const text = buildEvidencePackMarkdown({
       evidencePack: workspace.evidencePack,
-      experiment
+      experiment: { ...experiment, verification: undefined }
     });
-
     expect(text).toContain("Manual evidence note");
     expect(text).toContain("Scout contract");
-    expect(text).toContain("0xhash");
+    expect(text).toContain(CURRENT_HASH);
   });
 
-  it("reports recipient and contract lookup without conflating them", () => {
+  it("renders immutable snapshot values instead of mutable experiment values", () => {
     const text = buildEvidencePackMarkdown({
       evidencePack: workspace.evidencePack,
-      experiment: { ...experiment, verification }
+      experiment
     });
+    const verificationSection = text.slice(text.indexOf("## Verification snapshot"));
 
-    expect(text).toContain("## Read-only verification");
-    expect(text).toContain("RPC profile:** custom");
-    expect(text).toContain("transaction-status dialect:** object");
-    expect(text).toContain("Receipt capability:** available");
-    expect(text).toContain("Contract-state capability:** available");
-    expect(text).toContain("Receipt recipient:** 0xrecipient");
-    expect(text).toContain("not proof of the deployed contract address");
-    expect(text).toContain("Contract-state lookup:** found");
-    expect(text).toContain("does not prove authorship or contract behavior");
+    expect(verificationSection).toContain("## Verification snapshot");
+    expect(verificationSection).toContain("Snapshot version:** 1");
+    expect(verificationSection).toContain(SNAPSHOT_HASH);
+    expect(verificationSection).toContain(SNAPSHOT_ADDRESS);
+    expect(verificationSection).toContain("Checked manual status:** finalized");
+    expect(verificationSection).not.toContain(CURRENT_HASH);
+    expect(verificationSection).not.toContain(CURRENT_ADDRESS);
+    expect(verificationSection).not.toContain("Manual status:** accepted");
+    expect(verificationSection).toContain("Observed status:** FINALIZED");
+    expect(verificationSection).toContain("Result:** verified");
   });
 
   it("includes a no-experiment note", () => {
     const text = buildEvidencePackMarkdown({
       evidencePack: workspace.evidencePack
     });
-
     expect(text).toContain("No experiment selected");
   });
 });

@@ -64,6 +64,14 @@ function normalizeContractExperiment(value: unknown): ContractExperiment | null 
     return null;
   }
 
+  const verification = normalizeVerification(value.verification);
+  const matchingVerification = verification &&
+    verification.snapshot.transactionHash === value.transactionHash &&
+    verification.snapshot.contractAddress === value.deployedContractAddress &&
+    verification.snapshot.manualStatus === status
+      ? verification
+      : null;
+
   return {
     id: value.id,
     contractName: value.contractName,
@@ -76,7 +84,7 @@ function normalizeContractExperiment(value: unknown): ContractExperiment | null 
     portalSubmissionNotes: value.portalSubmissionNotes,
     createdAt,
     updatedAt,
-    ...(normalizeVerification(value.verification) ? { verification: normalizeVerification(value.verification)! } : {})
+    ...(matchingVerification ? { verification: matchingVerification } : {})
   };
 }
 
@@ -84,6 +92,14 @@ function normalizeVerification(value: unknown): ExperimentVerification | null {
   if (
     !isRecord(value) ||
     value.source !== "genlayer-rpc" ||
+    !isRecord(value.snapshot) ||
+    value.snapshot.version !== 1 ||
+    !isString(value.snapshot.transactionHash) ||
+    !isString(value.snapshot.contractAddress) ||
+    !isString(value.snapshot.manualStatus) ||
+    !EXPERIMENT_STATUSES.includes(
+      value.snapshot.manualStatus as ContractExperiment["status"]
+    ) ||
     !isString(value.rpcUrl) ||
     !isString(value.checkedAt) ||
     typeof value.transactionFound !== "boolean" ||
@@ -147,6 +163,12 @@ function normalizeVerification(value: unknown): ExperimentVerification | null {
     : value.result as ExperimentVerification["result"];
 
   return {
+    snapshot: {
+      version: 1,
+      transactionHash: value.snapshot.transactionHash,
+      contractAddress: value.snapshot.contractAddress,
+      manualStatus: value.snapshot.manualStatus as ContractExperiment["status"]
+    },
     source: "genlayer-rpc",
     rpcUrl: value.rpcUrl,
     rpcProfile,
@@ -187,6 +209,7 @@ function normalizeContributionLane(value: unknown): ContributionLane | null {
   ) {
     return null;
   }
+
 
   return {
     id: value.id,

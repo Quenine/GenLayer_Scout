@@ -34,16 +34,12 @@ export default function VerifyPage() {
   const [rpcUrl, setRpcUrl] = useState<string>(RPC_PRESETS.studionet);
   const [customCompatibilityMode, setCustomCompatibilityMode] =
     useState<"object" | "auto">("auto");
-  const [hash, setHash] = useState("");
-  const [address, setAddress] = useState("");
   const [result, setResult] = useState<ExperimentVerification>();
   const [checking, setChecking] = useState(false);
   const experiment = experiments.find((item) => item.id === id);
 
   useEffect(() => {
     const savedUrl = experiment?.verification?.rpcUrl || RPC_PRESETS.studionet;
-    setHash(experiment?.transactionHash ?? "");
-    setAddress(experiment?.deployedContractAddress ?? "");
     setRpcUrl(savedUrl);
     setRpcPreset(presetForUrl(savedUrl));
     setResult(experiment?.verification);
@@ -66,9 +62,9 @@ export default function VerifyPage() {
       rpcUrl,
       rpcProfile: rpcPreset,
       customCompatibilityMode,
-      transactionHash: hash,
+      transactionHash: experiment.transactionHash,
       manualStatus: experiment.status,
-      manualContractAddress: address
+      manualContractAddress: experiment.deployedContractAddress
     });
     setResult(next);
     updateExperiment({
@@ -145,27 +141,27 @@ export default function VerifyPage() {
                 <option value="object">Documented object form only</option>
               </select>
             </label>
+          )}          {experiment && (
+            <div className="md:col-span-2 grid gap-4 md:grid-cols-2">
+              <CopyableValue
+                label="recorded transaction hash (read-only)"
+                value={experiment.transactionHash}
+                compact={false}
+              />
+              <CopyableValue
+                label="recorded contract address (read-only)"
+                value={experiment.deployedContractAddress}
+                compact={false}
+              />
+              <p className="text-sm">
+                Recorded manual status: <strong>{experiment.status}</strong>
+              </p>
+            </div>
           )}
-          <label>
-            <span className="label">Transaction hash for this check</span>
-            <input
-              className="field font-mono"
-              value={hash}
-              onChange={(event) => setHash(event.target.value)}
-            />
-          </label>
-          <label>
-            <span className="label">Manual contract address for optional lookup</span>
-            <input
-              className="field font-mono"
-              value={address}
-              onChange={(event) => setAddress(event.target.value)}
-            />
-          </label>
         </div>
         <button
           className="btn-primary mt-5"
-          disabled={!experiment || checking || !rpcUrl.trim() || !hash.trim()}
+          disabled={!experiment || checking || !rpcUrl.trim() || !experiment.transactionHash.trim()}
           onClick={check}
         >
           {checking ? "Checking RPC..." : "Run read-only check"}
@@ -190,19 +186,19 @@ export default function VerifyPage() {
             <div className="bg-white p-5">
               <h3 className="label">Manual values</h3>
               <p className="text-sm">
-                Status: <strong>{experiment.status}</strong>
+                Status: <strong>{result.snapshot.manualStatus}</strong>
               </p>
               <div className="mt-3">
                 <CopyableValue
                   label="manual transaction hash"
-                  value={hash}
+                  value={result.snapshot.transactionHash}
                   compact={false}
                 />
               </div>
               <div className="mt-3">
                 <CopyableValue
                   label="manual contract address"
-                  value={address}
+                  value={result.snapshot.contractAddress}
                   compact={false}
                 />
               </div>

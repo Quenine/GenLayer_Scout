@@ -34,7 +34,15 @@ export function buildEvidencePackMarkdown({
     ? ""
     : "No experiment selected. This evidence pack does not include Studio deployment details.\n";
   const verification = experiment?.verification;
-  const verificationSection = verification ? `\n## Read-only verification
+  const verificationSection = verification ? `\n## Verification snapshot
+
+- **Snapshot version:** ${verification.snapshot.version}
+- **Checked transaction hash:** ${verification.snapshot.transactionHash || "Not recorded"}
+- **Checked contract address:** ${verification.snapshot.contractAddress || "Not recorded"}
+- **Checked manual status:** ${verification.snapshot.manualStatus}
+- **Checked at:** ${formatDate(verification.checkedAt)}
+
+## Read-only verification
 - **RPC profile:** ${verification.rpcProfile}
 - **Source RPC:** ${verification.rpcUrl}
 - **Successful transaction-status dialect:** ${verification.transactionStatusDialect}
@@ -43,11 +51,11 @@ export function buildEvidencePackMarkdown({
 - **Receipt capability:** ${verification.receiptCapability}
 - **Receipt available:** ${verification.receiptAvailable ? "Yes" : "No"}
 - **Observed status:** ${verification.observedStatus || "Not available"}
-- **Manual status:** ${experiment.status}
+- **Manual status:** ${verification.snapshot.manualStatus}
 - **Status match:** ${verification.statusMatchesManual === null ? "Not comparable" : verification.statusMatchesManual ? "Yes" : "No"}
 - **Receipt recipient:** ${verification.observedRecipient || "Not available"}
 - **Recipient meaning:** Receipt routing only; not proof of the deployed contract address.
-- **Manual contract address:** ${experiment.deployedContractAddress || "Not recorded"}
+- **Manual contract address:** ${verification.snapshot.contractAddress || "Not recorded"}
 - **Contract-state capability:** ${verification.contractStateCapability}
 - **Contract-state lookup:** ${verification.contractLookup}
 - **Contract-state endpoint returned a string:** ${verification.contractLookup === "found" ? "Yes" : "No"}
@@ -96,5 +104,5 @@ ${valueOrPrompt(evidencePack.nextMilestone, "State the next concrete result")}
 ${valueOrPrompt(evidencePack.portalSubmissionNotes, "Add reviewer context, reproduction notes, or scope boundaries")}
 
 ---
-Prepared in GenLayer Scout v0.2.0. Manual evidence remains necessary; verify all evidence against the original Studio run and Portal submission requirements before posting.`;
+Prepared in GenLayer Scout v0.2.1. Manual evidence remains necessary; verify all evidence against the original Studio run and Portal submission requirements before posting.`;
 }

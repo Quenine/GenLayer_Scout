@@ -20,3 +20,8 @@ Receipt and contract-state capabilities are `available`, `unsupported`, `unavail
 Studionet verification displays: “Studionet verified the lifecycle status. Receipt and contract-state RPC methods are not exposed by this endpoint.”
 
 Lifecycle verification does not prove authorship, source code, ownership, contract behavior, Builder Portal acceptance, eligibility, points, or rewards. See the sanitized [Studionet compatibility finding](findings/studionet-rpc-compatibility.md).
+## Verification input integrity
+
+Each v0.2.1 verification stores a version-1 historical snapshot containing the exact trimmed transaction hash, trimmed contract address, and manual lifecycle status used for the check. The Verify page uses the selected experiment’s recorded values as read-only inputs. Changing the recorded transaction hash, deployed contract address, or manual status invalidates the saved verification through the shared experiment-update path; changing descriptive or evidence fields preserves it.
+
+Workspace and backup normalization require a valid snapshot that exactly matches the experiment. Older saved verifications without a snapshot, and imported results whose snapshots do not match their experiment, are discarded so the check must be rerun. This integrity rule prevents stale results from being exported but does not make browser localStorage tamper-proof.

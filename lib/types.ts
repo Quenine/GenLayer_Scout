@@ -46,7 +46,14 @@ export const CONTRACT_LOOKUP_RESULTS = [
 ] as const;
 export type ContractLookupResult = (typeof CONTRACT_LOOKUP_RESULTS)[number];
 
+export interface VerificationSnapshot {
+  readonly version: 1;
+  readonly transactionHash: string;
+  readonly contractAddress: string;
+  readonly manualStatus: ExperimentStatus;
+}
 export interface ExperimentVerification {
+  readonly snapshot: VerificationSnapshot;
   source: "genlayer-rpc";
   rpcUrl: string;
   rpcProfile: RpcProfile;

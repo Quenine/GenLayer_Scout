@@ -33,6 +33,24 @@ afterEach(() => {
 });
 
 describe("verifyGenLayerTransaction", () => {
+  it("captures the exact normalized verification snapshot", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => reply({ result: "FINALIZED" })));
+
+    const result = await verifyGenLayerTransaction({
+      ...baseInput,
+      rpcUrl: RPC_PRESETS.studionet,
+      rpcProfile: "studionet",
+      transactionHash: ` ${TEST_TRANSACTION_HASH} `,
+      manualContractAddress: ` ${TEST_CONTRACT_ADDRESS} `
+    });
+
+    expect(result.snapshot).toEqual({
+      version: 1,
+      transactionHash: TEST_TRANSACTION_HASH,
+      contractAddress: TEST_CONTRACT_ADDRESS,
+      manualStatus: "finalized"
+    });
+  });
   it("uses Studionet positional status parameters and skips unsupported methods", async () => {
     const fetchMock = vi.fn(() => reply({ result: "FINALIZED" }));
     vi.stubGlobal("fetch", fetchMock);
