@@ -1,4 +1,4 @@
-import type { ContractExperiment, ContributionLane, EvidencePack } from "@/lib/types";
+﻿import type { ContractExperiment, ContributionLane, EvidencePack } from "@/lib/types";
 
 const WEAK_PLACEHOLDER_TERMS = [
   "test",
@@ -60,7 +60,7 @@ export function evaluateEvidenceReadiness({
       label: "Contribution category",
       complete: Boolean(contributionLane),
       kind: "narrative",
-      detail: "Choose the Portal lane this draft is for."
+      detail: "Choose the relevant contribution category."
     },
     {
       label: "Project summary",
@@ -75,22 +75,22 @@ export function evaluateEvidenceReadiness({
       detail: "Explain why the work matters for GenLayer builders."
     },
     {
-      label: "Selected contract experiment where applicable",
+      label: "Experiment record",
       complete: Boolean(experiment),
       kind: "evidence",
-      detail: "Select an experiment when this submission depends on Studio deployment evidence."
+      detail: "Select the experiment this report describes."
     },
     {
-      label: "Contract address or reason not applicable",
+      label: "Contract address",
       complete: addressCovered,
       kind: "evidence",
-      detail: "Provide an observed address or state why this submission has no address."
+      detail: "Provide the recorded address, or a reason when an address genuinely does not apply."
     },
     {
-      label: "Transaction hash or reason not applicable",
+      label: "Transaction hash",
       complete: transactionCovered,
       kind: "evidence",
-      detail: "Provide an observed hash or state why this submission has no hash."
+      detail: "Provide the recorded hash, or a reason when a transaction genuinely does not apply."
     },
     {
       label: "Evidence links",
@@ -163,4 +163,14 @@ export function findEvidenceQualityWarnings(evidencePack: EvidencePack): Quality
     });
   });
 }
+export function evidenceQualityWarningMessage(warning: QualityWarning): string {
+  if (warning.field === "Next milestone") {
+    return "Next milestone needs a concrete planned outcome.";
+  }
 
+  if (warning.field === "Portal submission notes") {
+    return "Portal submission notes needs useful implementation or review context.";
+  }
+
+  return `${warning.field} needs a more specific entry than “${warning.term}”.`;
+}

@@ -62,7 +62,7 @@ describe("verification integrity check-to-export", () => {
     expect(checkedReport).toContain(`Checked contract address:** ${CHECKED_ADDRESS}`);
     expect(checkedReport).toContain("Checked manual status:** finalized");
     expect(checkedReport).toContain("Observed status:** FINALIZED");
-    expect(checkedReport).toContain("Result:** verified");
+    expect(checkedReport).toContain("Result:** Verified");
 
     const edited = reconcileExperimentVerification(checked, {
       ...checked,
@@ -77,6 +77,6 @@ describe("verification integrity check-to-export", () => {
     expect(editedReport).not.toContain("## Verification snapshot");
     expect(editedReport).not.toContain(CHECKED_HASH);
     expect(editedReport).not.toContain("Observed status:** FINALIZED");
-    expect(editedReport).not.toContain("Result:** verified");
+    expect(editedReport).not.toContain("Result:** Verified");
   });
 });

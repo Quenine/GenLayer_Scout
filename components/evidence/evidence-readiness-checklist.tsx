@@ -4,9 +4,16 @@ import { AlertTriangle, CheckCircle2, Circle, Info } from "lucide-react";
 import type { ContractExperiment, ContributionLane, EvidencePack } from "@/lib/types";
 import {
   evaluateEvidenceReadiness,
+  evidenceQualityWarningMessage,
   findEvidenceQualityWarnings
 } from "@/lib/evidence-quality";
 import { cn } from "@/lib/utils";
+
+const STATUS_LABEL = {
+  Ready: "Complete",
+  "Needs evidence": "Evidence missing",
+  Incomplete: "Details missing"
+} as const;
 
 const STATUS_STYLE = {
   Ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
@@ -34,13 +41,13 @@ export function EvidenceReadinessChecklist({
     <section className="card overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold">Submission readiness</h2>
+          <h2 className="text-sm font-semibold">Evidence completeness</h2>
           <p className="mt-0.5 text-xs text-slate-500">
-            A local checklist for steward-reviewed submission preparation. It does not verify network data.
+            Checks whether the report contains the core context and supporting evidence needed to stand on its own.
           </p>
         </div>
         <span className={cn("rounded-full border px-3 py-1 text-xs font-semibold", STATUS_STYLE[readiness.status])}>
-          {readiness.status}
+          {STATUS_LABEL[readiness.status]}
         </span>
       </div>
 
@@ -67,14 +74,14 @@ export function EvidenceReadinessChecklist({
           <div className="flex gap-3">
             <AlertTriangle className="mt-0.5 shrink-0 text-amber-700" size={17} />
             <div>
-              <p className="text-sm font-semibold text-amber-900">Quality guard</p>
+              <p className="text-sm font-semibold text-amber-900">Content checks</p>
               <p className="mt-1 text-xs leading-5 text-amber-900">
-                These fields may be too vague for a steward-reviewed submission. The warning is non-blocking.
+                Some entries are too brief or generic to be useful in an exported report.
               </p>
               <ul className="mt-2 space-y-1 text-xs text-amber-900">
                 {warnings.map((warning) => (
                   <li key={`${warning.field}-${warning.term}`}>
-                    {warning.field}: contains weak placeholder term: {warning.term}
+                    {evidenceQualityWarningMessage(warning)}
                   </li>
                 ))}
               </ul>
@@ -86,10 +93,9 @@ export function EvidenceReadinessChecklist({
       <div className="flex gap-3 border-t border-line bg-slate-50 px-5 py-3 text-xs leading-5 text-slate-600">
         <Info size={15} className="mt-0.5 shrink-0" />
         <p>
-          Treat Ready as locally complete enough to review, not as Portal acceptance, eligibility, or verified transaction status.
+          Complete means the required report fields are present. It does not alter or strengthen the underlying verification result.
         </p>
       </div>
     </section>
   );
 }
-

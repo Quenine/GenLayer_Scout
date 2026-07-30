@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,7 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
+import { APP_VERSION } from "@/lib/app-metadata";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -122,7 +123,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="hidden items-center gap-2 text-xs text-slate-500 lg:flex">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            v0.2.0 - local-first + read-only RPC
+            v{APP_VERSION} - local-first + read-only RPC
           </div>
           <div className="ml-auto rounded-full border border-line bg-white px-3 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-slate-500">
             No wallet signing
@@ -135,4 +136,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-

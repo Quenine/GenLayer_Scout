@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Info } from "lucide-react";
 import { EvidencePackForm } from "@/components/evidence/evidence-pack-form";
@@ -34,16 +34,15 @@ export default function EvidencePage() {
   return (
     <>
       <PageHeader
-        eyebrow="Portal submission preparation"
+        eyebrow="Evidence report"
         title="Evidence pack"
-        description="Assemble manually tracked experiment details and contribution notes into a plain Markdown report. Verify every field against the original Studio evidence before submitting it anywhere."
+        description="Build a portable Markdown record of an experiment, its verification snapshot, test coverage, supporting links and known limitations."
       />
 
       <div className="mb-5 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
         <Info size={17} className="mt-0.5 shrink-0" aria-hidden="true" />
         <p className="leading-6">
-          Scout only formats local records. It does not read from Studio, check a transaction,
-          or submit to the GenLayer Portal.
+          The report combines your recorded experiment details with any saved read-only RPC verification. Supporting links and narrative remain user-provided.
         </p>
       </div>
 
