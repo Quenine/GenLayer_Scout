@@ -171,3 +171,53 @@ export interface ScoutBackupFile {
   schemaVersion: ScoutWorkspace["schemaVersion"];
   workspace: ScoutWorkspace;
 }
+
+export interface EvidenceManifestContributionContextV1 {
+  category: { id: string; name: string } | null;
+  title: string;
+  projectSummary: string;
+  genLayerRelevance: string;
+}
+
+export interface EvidenceManifestImplementationReferencesV1 {
+  experimentId: string;
+  contractName: string;
+  studioFileName: string;
+  deployedContractAddress: string;
+  transactionHash: string;
+}
+
+export interface EvidenceManifestExperimentDetailsV1 {
+  status: ExperimentStatus;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EvidenceManifestSupportingEvidenceV1 {
+  links: string[];
+  whatWasTested: string;
+  knownLimitations: string;
+  nextMilestone: string;
+  contractAddressNotApplicableReason: string;
+  transactionHashNotApplicableReason: string;
+}
+
+export interface EvidenceManifestPayloadV1 {
+  version: 1;
+  contributionContext: EvidenceManifestContributionContextV1;
+  implementationReferences: EvidenceManifestImplementationReferencesV1 | null;
+  experimentDetails: EvidenceManifestExperimentDetailsV1 | null;
+  verification: ExperimentVerification | null;
+  supportingEvidence: EvidenceManifestSupportingEvidenceV1;
+}
+
+export interface EvidenceManifestEnvelopeV1 {
+  format: "genlayer-scout-evidence-manifest";
+  payload: EvidenceManifestPayloadV1;
+  integrity: {
+    algorithm: "sha256";
+    canonicalization: "genlayer-scout-json-sorted-keys-v1";
+    digest: string;
+  };
+}

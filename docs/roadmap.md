@@ -30,6 +30,14 @@
 
 v0.2 remains read-only. It cannot establish authorship, contract behavior, Portal acceptance, eligibility, points, or rewards.
 
+
+## Evidence Manifest v1 - Batch 1 (completed)
+
+- Deterministic, versioned portable JSON envelope with sorted-key canonicalization and SHA-256 payload digest
+- Contribution context, implementation references, experiment details, immutable RPC snapshot and verification output, and supporting evidence
+- Local integrity recomputation only; no storage, network, signing, wallet, Portal, or UI changes
+- [Protocol documentation](EVIDENCE_MANIFEST_V1.md)
+
 ## Later local workflow improvements
 
 - Multiple named evidence packs
