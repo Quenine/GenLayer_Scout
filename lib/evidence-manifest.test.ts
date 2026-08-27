@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { sha256Hex } from "@/lib/sha256";
 import { describe, expect, it } from "vitest";
 import {
   canonicalizeEvidenceManifestJson,
@@ -271,7 +271,7 @@ describe("inspection status", () => {
       payload: invalidPayload,
       integrity: {
         ...envelope.integrity,
-        digest: createHash("sha256").update(canonicalizeEvidenceManifestJson(invalidPayload)).digest("hex")
+        digest: sha256Hex(canonicalizeEvidenceManifestJson(invalidPayload))
       }
     };
     const result = inspectEvidenceManifestV1(recomputed);

@@ -4,6 +4,7 @@ import { Info } from "lucide-react";
 import { EvidencePackForm } from "@/components/evidence/evidence-pack-form";
 import { EvidencePackPreview } from "@/components/evidence/evidence-pack-preview";
 import { EvidenceReadinessChecklist } from "@/components/evidence/evidence-readiness-checklist";
+import { PortableManifestSection } from "@/components/evidence/portable-manifest-section";
 import { PageHeader } from "@/components/page-header";
 import { useScout } from "@/components/scout-provider";
 import { buildEvidencePackMarkdown } from "@/lib/evidence-report";
@@ -58,6 +59,11 @@ export default function EvidencePage() {
             experiments={experiments}
             contributionLanes={contributionLanes}
             onChange={updateEvidencePack}
+          />
+          <PortableManifestSection
+            evidencePack={evidencePack}
+            experiment={selectedExperiment}
+            contributionLane={selectedContributionLane}
           />
         </div>
         <EvidencePackPreview markdown={markdown} fileName={fileName} />

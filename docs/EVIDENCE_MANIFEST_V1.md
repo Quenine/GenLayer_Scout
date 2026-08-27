@@ -70,3 +70,7 @@ The SHA-256 digest makes the manifest tamper-evident: any modification to the pa
 ## Public API
 
 The current core exposes `createEvidenceManifestV1` to build an envelope, `canonicalizeEvidenceManifestJson` and `digestEvidenceManifestPayload` for independent tooling, `verifyEvidenceManifestIntegrity` for an in-process check, `validateEvidenceManifestV1` for structural validation, and `inspectEvidenceManifestV1` for combined format/integrity/validation inspection. It performs no storage, network, signing, wallet, or UI work.
+
+## Generation and download
+
+The Scout UI provides a Portable Manifest section on the Evidence page. It collects optional repository URL, commit SHA, and deployment URL (implementation references), runs prerequisite validation, generates an envelope via `createEvidenceManifestV1`, and offers a deterministic JSON download. The manifest `createdAt` is set to the generation timestamp. Implementation reference fields are held in component state only and are not persisted to the workspace.

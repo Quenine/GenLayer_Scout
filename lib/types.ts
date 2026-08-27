@@ -185,6 +185,9 @@ export interface EvidenceManifestImplementationReferencesV1 {
   studioFileName: string;
   deployedContractAddress: string;
   transactionHash: string;
+  repositoryUrl: string;
+  repositoryCommit: string;
+  deploymentUrl: string;
 }
 
 export interface EvidenceManifestExperimentDetailsV1 {

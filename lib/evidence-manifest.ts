@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { sha256Hex } from "@/lib/sha256";
 import type {
   ContributionLane,
   ContractExperiment,
@@ -70,9 +70,7 @@ export function canonicalizeEvidenceManifestJson(value: unknown): string {
 }
 
 export function digestEvidenceManifestPayload(payload: EvidenceManifestPayloadV1): string {
-  return createHash("sha256")
-    .update(canonicalizeEvidenceManifestJson(payload))
-    .digest("hex");
+  return sha256Hex(canonicalizeEvidenceManifestJson(payload));
 }
 
 function evidenceLinks(evidencePack: EvidencePack, experiment?: ContractExperiment): string[] {
@@ -84,11 +82,19 @@ function evidenceLinks(evidencePack: EvidencePack, experiment?: ContractExperime
 export function buildEvidenceManifestPayloadV1({
   evidencePack,
   contributionLane,
-  experiment
+  experiment,
+  implementationReferences: implRefs,
+  createdAt
 }: {
   evidencePack: EvidencePack;
   contributionLane?: ContributionLane;
   experiment?: ContractExperiment;
+  implementationReferences?: {
+    repositoryUrl: string;
+    repositoryCommit: string;
+    deploymentUrl: string;
+  };
+  createdAt?: string;
 }): EvidenceManifestPayloadV1 {
   return {
     version: EVIDENCE_MANIFEST_VERSION,
@@ -103,12 +109,15 @@ export function buildEvidenceManifestPayloadV1({
       contractName: experiment.contractName,
       studioFileName: experiment.studioFileName,
       deployedContractAddress: experiment.deployedContractAddress,
-      transactionHash: experiment.transactionHash
+      transactionHash: experiment.transactionHash,
+      repositoryUrl: implRefs?.repositoryUrl ?? "",
+      repositoryCommit: implRefs?.repositoryCommit ?? "",
+      deploymentUrl: implRefs?.deploymentUrl ?? ""
     } : null,
     experimentDetails: experiment ? {
       status: experiment.status,
       notes: experiment.experimentNotes,
-      createdAt: experiment.createdAt,
+      createdAt: createdAt ?? experiment.createdAt,
       updatedAt: experiment.updatedAt
     } : null,
     verification: experiment?.verification ?? null,
@@ -127,6 +136,12 @@ export function createEvidenceManifestV1(input: {
   evidencePack: EvidencePack;
   contributionLane?: ContributionLane;
   experiment?: ContractExperiment;
+  implementationReferences?: {
+    repositoryUrl: string;
+    repositoryCommit: string;
+    deploymentUrl: string;
+  };
+  createdAt?: string;
 }): EvidenceManifestEnvelopeV1 {
   const payload = buildEvidenceManifestPayloadV1(input);
   return {

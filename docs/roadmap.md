@@ -38,6 +38,15 @@ v0.2 remains read-only. It cannot establish authorship, contract behavior, Porta
 - Local integrity recomputation only; no storage, network, signing, wallet, Portal, or UI changes
 - [Protocol documentation](EVIDENCE_MANIFEST_V1.md)
 
+## Evidence Manifest v1 - Batch 2A (completed)
+
+- Portable manifest section on the Evidence page with implementation reference fields
+- Prerequisite validation before generation
+- Manifest envelope generation with `createdAt` at generation time
+- Preview of key manifest fields including SHA-256 digest
+- Deterministic JSON download with sanitized filename
+- Browser-compatible SHA-256 implementation (no `node:crypto` dependency)
+
 ## Later local workflow improvements
 
 - Multiple named evidence packs
