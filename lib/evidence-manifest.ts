@@ -20,8 +20,8 @@ const SUPPORTED_MANIFEST_VERSIONS = new Set<number>([1]);
 const SUPPORTED_DIGEST_ALGORITHMS = new Set<string>(["sha256"]);
 const SUPPORTED_CANONICALIZATIONS = new Set<string>(["genlayer-scout-json-sorted-keys-v1"]);
 
-const TX_HASH_RE = /^0x[0-9a-f]{64}$/;
-const CONTRACT_ADDRESS_RE = /^0x[0-9a-f]{40}$/;
+const TX_HASH_RE = /^0x[a-fA-F0-9]{64}$/;
+const CONTRACT_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
 
 export const MANIFEST_INSPECTION_STATUSES = ["valid", "modified", "invalid", "unsupported"] as const;
 export type ManifestInspectionStatus = (typeof MANIFEST_INSPECTION_STATUSES)[number];

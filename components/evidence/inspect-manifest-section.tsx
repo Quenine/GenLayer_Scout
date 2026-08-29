@@ -196,9 +196,6 @@ export function InspectManifestSection() {
                 <div>
                   <p className="text-sm font-bold">{presentation.statusLabel}</p>
                   <p className="mt-1 text-xs leading-5">{presentation.statusExplanation}</p>
-                  <p className="mt-2 text-[11px] italic opacity-80">
-                    Inspection checks the manifest file itself. It does not re-query GenLayer or verify authorship, ownership, or linked content.
-                  </p>
                 </div>
               </div>
               <button className="btn-secondary shrink-0 !px-3 !py-2 text-xs" onClick={reset}>

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { APP_VERSION } from "@/lib/app-metadata";
 import {
   MAX_MANIFEST_INSPECT_BYTES,
   isManifestInspectFilenameAccepted,
@@ -18,7 +19,7 @@ function makeEnvelope(): EvidenceManifestEnvelopeV1 {
     format: "genlayer-scout-evidence-manifest",
     payload: {
       version: 1,
-      generator: { name: "GenLayer Scout", version: "0.2.1" },
+      generator: { name: "GenLayer Scout", version: APP_VERSION },
       contributionContext: {
         category: { id: "projects", name: "Projects" },
         title: "Faucet",

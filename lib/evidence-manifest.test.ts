@@ -408,6 +408,81 @@ describe("field validation", () => {
     expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(true);
   });
 
+  it("accepts a lowercase 20-byte contract address", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: `0x${"a".repeat(40)}`
+    };
+    const result = validateEvidenceManifestV1(env);
+    expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(false);
+  });
+
+  it("accepts an uppercase 20-byte contract address", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: `0x${"A".repeat(40)}`
+    };
+    const result = validateEvidenceManifestV1(env);
+    expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(false);
+  });
+
+  it("accepts a mixed-case 20-byte contract address", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: "0x6B9E22dd81F750c3fd9B1473002319f87992faC1"
+    };
+    const result = validateEvidenceManifestV1(env);
+    expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(false);
+  });
+
+  it("rejects a too-short contract address", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: `0x${"a".repeat(39)}`
+    };
+    const result = validateEvidenceManifestV1(env);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(true);
+  });
+
+  it("rejects a non-hex contract address", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: `0x${"g".repeat(40)}`
+    };
+    const result = validateEvidenceManifestV1(env);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("deployedContractAddress"))).toBe(true);
+  });
+
+  it("preserves a generated manifest's mixed-case address through serialize to inspect as Valid", () => {
+    const env = validEnvelope();
+    env.payload.implementationReferences = {
+      ...env.payload.implementationReferences!,
+      deployedContractAddress: "0x6B9E22dd81F750c3fd9B1473002319f87992faC1"
+    };
+    env.payload.verification.snapshot = {
+      ...env.payload.verification.snapshot,
+      contractAddress: "0x6B9E22dd81F750c3fd9B1473002319f87992faC1"
+    };
+    env.integrity = { ...env.integrity, digest: digestEvidenceManifestPayload(env.payload) };
+
+    const roundTripped = JSON.parse(JSON.stringify(env)) as EvidenceManifestEnvelopeV1;
+    expect(roundTripped.payload.implementationReferences!.deployedContractAddress).toBe(
+      "0x6B9E22dd81F750c3fd9B1473002319f87992faC1"
+    );
+    const inspection = inspectEvidenceManifestV1(roundTripped);
+    expect(inspection.status).toBe("valid");
+    expect(roundTripped.payload.implementationReferences!.deployedContractAddress).toBe(
+      "0x6B9E22dd81F750c3fd9B1473002319f87992faC1"
+    );
+  });
+
   it("accepts empty contract address", () => {
     const env = validEnvelope();
     env.payload.implementationReferences = {

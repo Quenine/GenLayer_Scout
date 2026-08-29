@@ -1,8 +1,8 @@
 ﻿# GenLayer Scout
 
-GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds profile-aware, read-only lifecycle verification. Studionet uses its confirmed positional transaction-status dialect and skips receipt and contract-state methods because they are not exposed; Bradbury and Asimov use documented object-form requests; Custom supports object-only or conservative Auto compatibility.
+GenLayer Scout is a local-first workbench for people building and documenting contributions around GenLayer. v0.2 adds profile-aware, read-only lifecycle verification. Studionet uses its confirmed positional transaction-status dialect and skips receipt and contract-state methods because they are not exposed; Bradbury and Asimov use documented object-form requests; Custom supports object-only or conservative Auto compatibility. v0.3 adds the portable Evidence Manifest v1: a deterministic, versioned JSON export with a SHA-256 payload digest, plus an independent local inspection workflow.
 
-Verification persists the RPC profile, successful dialect, lifecycle comparison, and optional-method capabilities. In v0.2.1, every result is bound to a versioned historical snapshot of the checked transaction hash, contract address, and manual status. Editing any of those recorded experiment fields invalidates the saved result; unrelated metadata edits preserve it. Lifecycle verification is independent of receipt and contract-state support and does not prove authorship or contract behavior. Raw RPC response bodies are never exposed. See [verification notes](docs/verification-notes.md) and the [sanitized Studionet finding](docs/findings/studionet-rpc-compatibility.md).
+Verification persists the RPC profile, successful dialect, lifecycle comparison, and optional-method capabilities. In each verification, every result is bound to a versioned historical snapshot of the checked transaction hash, contract address, and manual status. Editing any of those recorded experiment fields invalidates the saved result; unrelated metadata edits preserve it. Lifecycle verification is independent of receipt and contract-state support and does not prove authorship or contract behavior. Raw RPC response bodies are never exposed. See [verification notes](docs/verification-notes.md) and the [sanitized Studionet finding](docs/findings/studionet-rpc-compatibility.md).
 
 ## Why it exists
 
@@ -47,6 +47,19 @@ The Verify route defaults to Studionet and offers Bradbury, Asimov, and Custom p
 
 A matching safe lifecycle comparison may be `verified` even when receipt and contract-state capabilities are `unsupported`. Receipt recipients remain routing observations only. Lifecycle verification does not prove source code, authorship, ownership, behavior, Portal acceptance, eligibility, points, or rewards.
 
+## v0.3 Evidence Manifest v1
+
+v0.3 adds a portable Evidence Manifest v1. From the Evidence page you can generate a deterministic JSON artifact, download it, and later inspect any `.json` or `.manifest.json` file locally.
+
+- **Portable export**: A versioned JSON envelope binding contribution context, implementation references, experiment details, the saved verification snapshot, and supporting evidence.
+- **Snapshot-bound verification**: The manifest records the saved read-only RPC verification, bound to the immutable snapshot (transaction hash, contract address, manual status) it was checked against. It is never re-fetched or recomputed during manifest creation or inspection.
+- **Deterministic SHA-256 digest**: Payload keys are canonicalized (sorted) and hashed with SHA-256. The digest is included in the envelope; any payload change changes the digest, so modification is detectable.
+- **Generator provenance**: Each manifest records the Scout release (`GenLayer Scout v0.3.0`) that generated it.
+- **JSON export**: A deterministic `.manifest.json` download with a digest-derived filename.
+- **Independent local inspection**: Load any `.json` or `.manifest.json` file and review its status against one of four outcomes — **Valid**, **Modified** (structurally valid but payload does not match the recorded digest), **Invalid**, or **Unsupported** (recognized manifest format using an unsupported version or integrity method). Files are read in the browser and are not uploaded or persisted.
+
+Limitations: the digest is tamper-evident, not tamper-proof. A `Valid` result means the payload matches its recorded digest; it does not prove who created the manifest, ownership, authorship, or the truthfulness of linked evidence, and it does not perform current on-chain verification or establish contract behavior, Portal acceptance, eligibility, points, or rewards. See [Evidence Manifest v1](docs/EVIDENCE_MANIFEST_V1.md) and the [manual release checklist](docs/release-checklist.md).
+
 ## Setup
 
 Requirements: a current Node.js LTS release and npm.
@@ -83,7 +96,7 @@ app/
 components/
   build-log/          Build log form
   dashboard/          Dashboard summary components
-  evidence/           Evidence form, readiness checklist, Markdown preview
+  evidence/           Evidence form, readiness checklist, Markdown preview, manifest generation and inspection
   experiments/        Experiment form and responsive ledger
   shared/             Shared field utilities such as copyable values
 lib/
@@ -154,4 +167,4 @@ Before treating a generated pack as submission-ready, verify:
 
 ## Roadmap
 
-The current roadmap is maintained in [docs/roadmap.md](docs/roadmap.md). v0.2 read-only verification is complete. Later work remains constrained by the same principle: manual records, RPC observations, and any future authoritative integrations must stay visibly distinct.
+The current roadmap is maintained in [docs/roadmap.md](docs/roadmap.md). v0.2 read-only verification and v0.3 Evidence Manifest v1 are complete. Later work remains constrained by the same principle: manual records, RPC observations, and any future authoritative integrations must stay visibly distinct.

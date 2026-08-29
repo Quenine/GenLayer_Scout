@@ -31,14 +31,17 @@
 v0.2 remains read-only. It cannot establish authorship, contract behavior, Portal acceptance, eligibility, points, or rewards.
 
 
-## Evidence Manifest v1 - Batch 1 (completed)
+## v0.3 - Evidence Manifest v1 (completed)
+
+### Batch 1 - Protocol core (completed)
 
 - Deterministic, versioned portable JSON envelope with sorted-key canonicalization and SHA-256 payload digest
 - Contribution context, implementation references, experiment details, immutable RPC snapshot and verification output, and supporting evidence
+- Generator provenance recording the Scout release that produced the artifact
 - Local integrity recomputation only; no storage, network, signing, wallet, Portal, or UI changes
 - [Protocol documentation](EVIDENCE_MANIFEST_V1.md)
 
-## Evidence Manifest v1 - Batch 2A (completed)
+### Batch 2A - Generation and download (completed)
 
 - Portable manifest section on the Evidence page with implementation reference fields
 - Prerequisite validation before generation
@@ -47,7 +50,7 @@ v0.2 remains read-only. It cannot establish authorship, contract behavior, Porta
 - Deterministic JSON download with sanitized filename
 - Browser-compatible SHA-256 implementation (no `node:crypto` dependency)
 
-## Evidence Manifest v1 - Batch 2B (in progress)
+### Batch 2B - Independent inspection (completed)
 
 - Independent read-only manifest inspection on the Evidence page
 - Valid / modified / invalid / unsupported status presentation
@@ -55,9 +58,19 @@ v0.2 remains read-only. It cannot establish authorship, contract behavior, Porta
 - Safe digest and detail display, including raw JSON view
 - Inspection never imports into the workspace or localStorage
 
-## Evidence Manifest v1 - deferred
+### Release hardening (completed)
 
-- Manifest history and storage of inspected/generated manifests
+- User-facing copy audit for accurate, non-overclaiming integrity wording
+- Shared `APP_VERSION` version reference (v0.3.0)
+- README and roadmap updated for v0.3
+- Manual release smoke-test checklist
+
+v0.3 manifests are tamper-evident, not tamper-proof. A valid result does not prove authorship, ownership, or the truthfulness of linked evidence; inspection performs no current RPC verification.
+
+## Evidence Manifest v1 - deferred (not required for v0.3)
+
+- Manifest history and saved storage of inspected/generated manifests
+- Possible later improvement; deliberately omitted from v0.3
 
 ## Later local workflow improvements
 
