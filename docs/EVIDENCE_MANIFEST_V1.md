@@ -18,7 +18,20 @@ interface EvidenceManifestEnvelopeV1 {
 }
 ```
 
-`payload.version` is `1`. Its top-level fields are `contributionContext`, `implementationReferences`, `experimentDetails`, `verification`, and `supportingEvidence`. When no experiment is selected, the implementation, experiment, and verification fields are `null`. The verification value is the recorded `ExperimentVerification`, including its immutable `snapshot`; it is never recomputed or fetched while creating a manifest.
+`payload.version` is `1`. Its top-level fields are `generator`, `contributionContext`, `implementationReferences`, `experimentDetails`, `verification`, and `supportingEvidence`. When no experiment is selected, the implementation, experiment, and verification fields are `null`. The verification value is the recorded `ExperimentVerification`, including its immutable `snapshot`; it is never recomputed or fetched while creating a manifest.
+
+## Generator
+
+The payload includes a `generator` object recording which GenLayer Scout release produced the artifact:
+
+```ts
+generator: {
+  name: "GenLayer Scout";
+  version: string;
+}
+```
+
+`name` is always `"GenLayer Scout"` and `version` is the Scout `APP_VERSION` at generation time. It is informational provenance only and is part of the signed-over payload, so changing it changes the digest. It does not prove authorship or authenticity. A manifest that is missing `generator`, has the wrong `name`, or has an empty `version` is invalid.
 
 ## Canonicalization and verification
 
@@ -42,6 +55,7 @@ A verifier should check the format, payload version, algorithm, and canonicaliza
 `validateEvidenceManifestV1` checks structural integrity of the manifest payload:
 
 - **Field types**: Required fields must be present and correctly typed.
+- **Generator**: `generator` must be an object with `name === "GenLayer Scout"` and a non-empty `version` of at most 100 characters. An unknown generator version does not make the manifest unsupported; the format version, digest algorithm, and canonicalization identifier remain the compatibility boundaries.
 - **Required text fields**: `supportingEvidence.whatWasTested`, `supportingEvidence.knownLimitations`, and `supportingEvidence.nextMilestone` must be non-empty strings after trimming whitespace. An author with no known limitation can record something explicit such as `"None currently identified"`.
 - **Transaction hash**: Must be a 32-byte lowercase hex string (`0x` + 64 hex characters).
 - **Contract address**: Optional. When present, must be a 20-byte lowercase hex string (`0x` + 40 hex characters). Empty strings are accepted.
@@ -74,3 +88,16 @@ The current core exposes `createEvidenceManifestV1` to build an envelope, `canon
 ## Generation and download
 
 The Scout UI provides a Portable Manifest section on the Evidence page. It collects optional repository URL, commit SHA, and deployment URL (implementation references), runs prerequisite validation, generates an envelope via `createEvidenceManifestV1`, and offers a deterministic JSON download. The manifest `createdAt` is set to the generation timestamp. Implementation reference fields are held in component state only and are not persisted to the workspace.
+
+## Local inspection
+
+The Scout UI also provides an Inspect Manifest section on the Evidence page. It loads a local `.json` or `.manifest.json` file, reads it in the browser, and runs it through `inspectEvidenceManifestV1`. It presents one of the inspection statuses:
+
+- **Valid**: Structure and internal consistency checks passed, and the payload digest matches the recorded digest.
+- **Modified**: Structurally valid, but the current payload does not match the recorded digest.
+- **Invalid**: Not a valid Evidence Manifest v1 or contains inconsistent data.
+- **Unsupported**: A GenLayer Scout manifest that uses a version, digest algorithm, or canonicalization this release does not support.
+
+Inspection is entirely local and read-only. It never uploads the file, does not write to the workspace or `localStorage`, does not import manifest data into the experiment or evidence forms, and is cleared when a new file is selected or the view is reset.
+
+Inspection does not re-query GenLayer or re-verify on-chain state. A valid digest only means the manifest payload has not changed since the digest was recorded. It does not prove authorship, ownership, or the truthfulness of the linked evidence, and it does not establish contract behavior, Portal acceptance, eligibility, points, or rewards.

@@ -179,6 +179,11 @@ export interface EvidenceManifestContributionContextV1 {
   genLayerRelevance: string;
 }
 
+export interface EvidenceManifestGeneratorV1 {
+  name: "GenLayer Scout";
+  version: string;
+}
+
 export interface EvidenceManifestImplementationReferencesV1 {
   experimentId: string;
   contractName: string;
@@ -208,6 +213,7 @@ export interface EvidenceManifestSupportingEvidenceV1 {
 
 export interface EvidenceManifestPayloadV1 {
   version: 1;
+  generator: EvidenceManifestGeneratorV1;
   contributionContext: EvidenceManifestContributionContextV1;
   implementationReferences: EvidenceManifestImplementationReferencesV1 | null;
   experimentDetails: EvidenceManifestExperimentDetailsV1 | null;

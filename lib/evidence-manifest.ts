@@ -1,4 +1,5 @@
 import { sha256Hex } from "@/lib/sha256";
+import { APP_VERSION } from "@/lib/app-metadata";
 import type {
   ContributionLane,
   ContractExperiment,
@@ -10,6 +11,7 @@ import { EXPERIMENT_STATUSES } from "@/lib/types";
 
 export const EVIDENCE_MANIFEST_FORMAT = "genlayer-scout-evidence-manifest" as const;
 export const EVIDENCE_MANIFEST_VERSION = 1 as const;
+export const EVIDENCE_MANIFEST_GENERATOR_NAME = "GenLayer Scout" as const;
 export const EVIDENCE_MANIFEST_DIGEST_ALGORITHM = "sha256" as const;
 export const EVIDENCE_MANIFEST_CANONICALIZATION =
   "genlayer-scout-json-sorted-keys-v1" as const;
@@ -98,6 +100,10 @@ export function buildEvidenceManifestPayloadV1({
 }): EvidenceManifestPayloadV1 {
   return {
     version: EVIDENCE_MANIFEST_VERSION,
+    generator: {
+      name: EVIDENCE_MANIFEST_GENERATOR_NAME,
+      version: APP_VERSION
+    },
     contributionContext: {
       category: contributionLane ? { id: contributionLane.id, name: contributionLane.name } : null,
       title: evidencePack.title,
@@ -188,6 +194,18 @@ function validateManifestPayload(payload: EvidenceManifestPayloadV1): string[] {
 
   if (payload.version !== 1) {
     errors.push("Payload version must be 1.");
+  }
+
+  if (typeof payload.generator !== "object" || payload.generator === null) {
+    errors.push("generator is required.");
+  } else {
+    const generator = payload.generator;
+    if (typeof generator.name !== "string" || generator.name !== EVIDENCE_MANIFEST_GENERATOR_NAME) {
+      errors.push(`generator.name must be "${EVIDENCE_MANIFEST_GENERATOR_NAME}".`);
+    }
+    if (typeof generator.version !== "string" || generator.version.trim().length === 0 || generator.version.length > 100) {
+      errors.push("generator.version must be a non-empty string of at most 100 characters.");
+    }
   }
 
   if (typeof payload.contributionContext !== "object" || payload.contributionContext === null) {

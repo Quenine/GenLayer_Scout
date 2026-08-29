@@ -1,8 +1,10 @@
 import { sha256Hex } from "@/lib/sha256";
+import { APP_VERSION } from "@/lib/app-metadata";
 import { describe, expect, it } from "vitest";
 import {
   canonicalizeEvidenceManifestJson,
   createEvidenceManifestV1,
+  digestEvidenceManifestPayload,
   inspectEvidenceManifestV1,
   validateEvidenceManifestV1,
   verifyEvidenceManifestIntegrity
@@ -548,5 +550,63 @@ describe("malformed input", () => {
     });
     expect(result.status).toBe("invalid");
     expect(result.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe("generator", () => {
+  it("includes generator.name in generated manifests", () => {
+    const envelope = createEvidenceManifestV1(input());
+    expect(envelope.payload.generator.name).toBe("GenLayer Scout");
+  });
+
+  it("includes the current APP_VERSION as generator.version", () => {
+    const envelope = createEvidenceManifestV1(input());
+    expect(envelope.payload.generator.version).toBe(APP_VERSION);
+  });
+
+  it("changes the digest when generator changes", () => {
+    const base = createEvidenceManifestV1(input());
+    const changed = createEvidenceManifestV1(input());
+    changed.payload.generator = { name: "GenLayer Scout", version: "0.0.0" };
+    const changedWithDigest = {
+      ...changed,
+      integrity: { ...changed.integrity, digest: digestEvidenceManifestPayload(changed.payload) }
+    };
+    expect(changedWithDigest.integrity.digest).not.toBe(base.integrity.digest);
+    expect(verifyEvidenceManifestIntegrity(changedWithDigest)).toBe(true);
+  });
+
+  it("treats a manifest with missing generator as invalid", () => {
+    const env = validEnvelope();
+    const stripped = { ...env, payload: { ...env.payload } as never, integrity: { ...env.integrity } };
+    (stripped.payload as Record<string, unknown>).generator = undefined;
+    const validation = validateEvidenceManifestV1(stripped as EvidenceManifestEnvelopeV1);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some((e) => e.includes("generator"))).toBe(true);
+  });
+
+  it("treats an incorrect generator name as invalid", () => {
+    const env = validEnvelope();
+    env.payload.generator = { name: "Other Tool", version: APP_VERSION };
+    const inspection = inspectEvidenceManifestV1(env);
+    expect(inspection.status).toBe("invalid");
+    expect(inspection.errors.some((e) => e.includes("generator.name"))).toBe(true);
+  });
+
+  it("treats an empty generator version as invalid", () => {
+    const env = validEnvelope();
+    env.payload.generator = { name: "GenLayer Scout", version: "   " };
+    const validation = validateEvidenceManifestV1(env);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors.some((e) => e.includes("generator.version"))).toBe(true);
+  });
+
+  it("survives serialize and inspect round trip", () => {
+    const envelope = createEvidenceManifestV1(input());
+    const roundTripped = JSON.parse(JSON.stringify(envelope)) as EvidenceManifestEnvelopeV1;
+    expect(roundTripped.payload.generator).toEqual({ name: "GenLayer Scout", version: APP_VERSION });
+    const inspection = inspectEvidenceManifestV1(roundTripped);
+    expect(inspection.status).toBe("valid");
+    expect(inspection.digestMatches).toBe(true);
   });
 });

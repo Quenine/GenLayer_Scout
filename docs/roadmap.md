@@ -47,6 +47,18 @@ v0.2 remains read-only. It cannot establish authorship, contract behavior, Porta
 - Deterministic JSON download with sanitized filename
 - Browser-compatible SHA-256 implementation (no `node:crypto` dependency)
 
+## Evidence Manifest v1 - Batch 2B (in progress)
+
+- Independent read-only manifest inspection on the Evidence page
+- Valid / modified / invalid / unsupported status presentation
+- Local file handling with size and filename limits
+- Safe digest and detail display, including raw JSON view
+- Inspection never imports into the workspace or localStorage
+
+## Evidence Manifest v1 - deferred
+
+- Manifest history and storage of inspected/generated manifests
+
 ## Later local workflow improvements
 
 - Multiple named evidence packs
