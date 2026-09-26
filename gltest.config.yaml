@@ -1,0 +1,4 @@
+# GenLayer test configuration (used by the genlayer-test CLI).
+# Direct-Mode tests do not require a network; only contract paths are declared.
+paths:
+  contracts: contracts

@@ -1,0 +1,77 @@
+{
+  "format": "genlayer-scout-evidence-manifest",
+  "payload": {
+    "version": 1,
+    "generator": {
+      "name": "GenLayer Scout",
+      "version": "0.3.0"
+    },
+    "contributionContext": {
+      "category": {
+        "id": "projects",
+        "name": "Projects"
+      },
+      "title": "Scout Evidence Anchor",
+      "projectSummary": "Anchors a portable GenLayer Scout Evidence Manifest v1 digest onchain and lets validators verify the public manifest.",
+      "genLayerRelevance": "Uses GenLayer validator consensus over independently fetched public web evidence."
+    },
+    "implementationReferences": {
+      "experimentId": "experiment-1",
+      "contractName": "ScoutEvidenceAnchor",
+      "studioFileName": "scout_evidence_anchor.py",
+      "deployedContractAddress": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "transactionHash": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "repositoryUrl": "https://example.test/repository",
+      "repositoryCommit": "c0ffee1234567890abcdef1234567890abcdef12",
+      "deploymentUrl": "https://example.test/deployment"
+    },
+    "experimentDetails": {
+      "status": "accepted",
+      "notes": "Unicode probe: café, éàü, 日本語, Здравствуйте, 你好, العربية, 😀 emoji, → arrow,   nbsp, \u0000nul, \u001f unit,  del, \"quotes\", back\\slash, \ttab, \nnewline, \rcr.",
+      "createdAt": "2026-08-01T00:00:00.000Z",
+      "updatedAt": "2026-08-01T00:00:00.000Z"
+    },
+    "verification": {
+      "snapshot": {
+        "version": 1,
+        "transactionHash": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "contractAddress": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manualStatus": "accepted"
+      },
+      "source": "genlayer-rpc",
+      "rpcUrl": "https://studio.genlayer.com/api",
+      "rpcProfile": "studionet",
+      "transactionStatusDialect": "positional",
+      "receiptCapability": "unsupported",
+      "contractStateCapability": "unsupported",
+      "checkedAt": "2026-08-01T00:00:00.000Z",
+      "transactionFound": true,
+      "receiptAvailable": false,
+      "observedStatus": "FINALIZED",
+      "observedStatusCode": null,
+      "statusMatchesManual": true,
+      "observedRecipient": "",
+      "contractLookup": "not_checked",
+      "contractStateResult": "",
+      "result": "verified",
+      "errorMessage": ""
+    },
+    "supportingEvidence": {
+      "links": [
+        "https://example.test/result",
+        "https://example.test/repository",
+        "https://example.test/test-log"
+      ],
+      "whatWasTested": "Payload digest recomputation and stable-field agreement.",
+      "knownLimitations": "No signing system; does not prove authorship.",
+      "nextMilestone": "Studio deployment and public verification.",
+      "contractAddressNotApplicableReason": "",
+      "transactionHashNotApplicableReason": ""
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "genlayer-scout-json-sorted-keys-v1",
+    "digest": "ad7aff059bd82f8a8145b64d025ea22cf94dc389939b46d7af8d6f92f8ba7c60"
+  }
+}

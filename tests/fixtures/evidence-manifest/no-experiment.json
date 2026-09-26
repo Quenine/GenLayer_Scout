@@ -1,0 +1,37 @@
+{
+  "format": "genlayer-scout-evidence-manifest",
+  "payload": {
+    "version": 1,
+    "generator": {
+      "name": "GenLayer Scout",
+      "version": "0.3.0"
+    },
+    "contributionContext": {
+      "category": {
+        "id": "projects",
+        "name": "Projects"
+      },
+      "title": "Contribution lane draft",
+      "projectSummary": "No experiment selected yet.",
+      "genLayerRelevance": "Tracks contribution lanes."
+    },
+    "implementationReferences": null,
+    "experimentDetails": null,
+    "verification": null,
+    "supportingEvidence": {
+      "links": [
+        "https://example.test/notes"
+      ],
+      "whatWasTested": "Lane bookkeeping only.",
+      "knownLimitations": "No deployed contract yet.",
+      "nextMilestone": "Deploy an Intelligent Contract.",
+      "contractAddressNotApplicableReason": "",
+      "transactionHashNotApplicableReason": ""
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "canonicalization": "genlayer-scout-json-sorted-keys-v1",
+    "digest": "36accee46c1cb91aff429ccfbc7edd168ff8e4cc86bd7cb8cecf67e5bf45d9ef"
+  }
+}

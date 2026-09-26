@@ -1,0 +1,7 @@
+pytest>=7.0
+genlayer-test==0.29.2
+genvm-linter
+# Used by the Direct-Mode tests to assert that the leader/validator closures
+# handed to gl.vm.run_nondet_unsafe are actually serializable. The SDK itself
+# cloudpickles those closures before crossing the WASM boundary.
+cloudpickle>=3.0
