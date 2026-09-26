@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { APP_VERSION } from "@/lib/app-metadata";
 import {
   MAX_MANIFEST_INSPECT_BYTES,
@@ -80,13 +80,13 @@ function makeEnvelope(): EvidenceManifestEnvelopeV1 {
 }
 
 describe("isManifestInspectFilenameAccepted", () => {
-  it("accepts .json files", () => {
+  it("accepts .json files", async () => {
     expect(isManifestInspectFilenameAccepted("manifest.json")).toBe(true);
     expect(isManifestInspectFilenameAccepted("evidence.manifest.json")).toBe(true);
     expect(isManifestInspectFilenameAccepted("result.JSON")).toBe(true);
   });
 
-  it("rejects unrelated filenames", () => {
+  it("rejects unrelated filenames", async () => {
     expect(isManifestInspectFilenameAccepted("notes.txt")).toBe(false);
     expect(isManifestInspectFilenameAccepted("manifest.json.backup")).toBe(false);
     expect(isManifestInspectFilenameAccepted("")).toBe(false);
@@ -95,12 +95,12 @@ describe("isManifestInspectFilenameAccepted", () => {
 });
 
 describe("isManifestInspectSizeAccepted", () => {
-  it("accepts non-empty sizes at the boundary", () => {
+  it("accepts non-empty sizes at the boundary", async () => {
     expect(isManifestInspectSizeAccepted(1)).toBe(true);
     expect(isManifestInspectSizeAccepted(MAX_MANIFEST_INSPECT_BYTES)).toBe(true);
   });
 
-  it("rejects empty and oversized files", () => {
+  it("rejects empty and oversized files", async () => {
     expect(isManifestInspectSizeAccepted(0)).toBe(false);
     expect(isManifestInspectSizeAccepted(MAX_MANIFEST_INSPECT_BYTES + 1)).toBe(false);
     expect(isManifestInspectSizeAccepted(-1)).toBe(false);
@@ -108,7 +108,7 @@ describe("isManifestInspectSizeAccepted", () => {
 });
 
 describe("parseManifestInspectText", () => {
-  it("parses a valid manifest envelope", () => {
+  it("parses a valid manifest envelope", async () => {
     const result = parseManifestInspectText(JSON.stringify(makeEnvelope()));
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -116,19 +116,19 @@ describe("parseManifestInspectText", () => {
     }
   });
 
-  it("rejects empty text", () => {
+  it("rejects empty text", async () => {
     const result = parseManifestInspectText("");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.reason).toBe("parse-error");
   });
 
-  it("rejects invalid JSON", () => {
+  it("rejects invalid JSON", async () => {
     const result = parseManifestInspectText("{ not json");
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.reason).toBe("parse-error");
   });
 
-  it("rejects non-envelope JSON", () => {
+  it("rejects non-envelope JSON", async () => {
     const result = parseManifestInspectText(JSON.stringify({ foo: 1 }));
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.reason).toBe("not-envelope");
@@ -136,11 +136,11 @@ describe("parseManifestInspectText", () => {
 });
 
 describe("safeExternalLink", () => {
-  it("returns https URLs", () => {
+  it("returns https URLs", async () => {
     expect(safeExternalLink("https://example.test/a")).toBeTruthy();
   });
 
-  it("rejects non-https schemes and junk", () => {
+  it("rejects non-https schemes and junk", async () => {
     expect(safeExternalLink("javascript:alert(1)")).toBeNull();
     expect(safeExternalLink("http://example.test")).toBeNull();
     expect(safeExternalLink("not a url")).toBeNull();
@@ -150,17 +150,17 @@ describe("safeExternalLink", () => {
 });
 
 describe("presentManifestInspection", () => {
-  it("presents a valid manifest with details and correct explanation", () => {
+  it("presents a valid manifest with details and correct explanation", async () => {
     const text = JSON.stringify(makeEnvelope());
     const parsed = parseManifestInspectText(text);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    const result = inspectEvidenceManifestV1(parsed.envelope);
+    const result = await inspectEvidenceManifestV1(parsed.envelope);
 
     // Fix the stub digest so the envelope is genuinely valid.
     const envelope = makeEnvelope();
     envelope.integrity.digest = result.computedDigest;
-    const validResult = inspectEvidenceManifestV1(envelope);
+    const validResult = await inspectEvidenceManifestV1(envelope);
 
     const presentation = presentManifestInspection(envelope, validResult);
     expect(presentation.status).toBe("valid");
@@ -179,14 +179,14 @@ describe("presentManifestInspection", () => {
     );
   });
 
-  it("presents a modified manifest without calling it valid", () => {
+  it("presents a modified manifest without calling it valid", async () => {
     const envelope = makeEnvelope();
     const parsed = parseManifestInspectText(JSON.stringify(envelope));
     if (!parsed.ok) return;
 
     // Force a digest mismatch to a structurally valid payload.
     envelope.integrity.digest = "0".repeat(64);
-    const modified = inspectEvidenceManifestV1(envelope);
+    const modified = await inspectEvidenceManifestV1(envelope);
 
     const presentation = presentManifestInspection(envelope, modified);
     expect(presentation.status).toBe("modified");
@@ -200,7 +200,7 @@ describe("presentManifestInspection", () => {
     );
   });
 
-  it("hides nested details for a structurally invalid manifest", () => {
+  it("hides nested details for a structurally invalid manifest", async () => {
     const base = makeEnvelope();
     const invalidEnvelope: EvidenceManifestEnvelopeV1 = {
       ...base,
@@ -212,7 +212,7 @@ describe("presentManifestInspection", () => {
         } as EvidenceManifestEnvelopeV1["payload"]["contributionContext"]
       }
     };
-    const result = inspectEvidenceManifestV1(invalidEnvelope);
+    const result = await inspectEvidenceManifestV1(invalidEnvelope);
     expect(result.status).toBe("invalid");
 
     const presentation = presentManifestInspection(invalidEnvelope, result);

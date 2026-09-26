@@ -47,6 +47,37 @@ The digest is lowercase hexadecimal SHA-256 over the canonicalized `payload` onl
 - Sparse arrays (arrays with holes) are rejected.
 - Cyclic object structures are rejected.
 - The input is never mutated.
+- The canonical string is encoded as UTF-8 before hashing.
+
+## Compatibility note (Scout v0.3.1)
+
+Scout v0.3.1 corrects the browser SHA-256 implementation to standard SHA-256.
+Evidence Manifest v1 itself did not change: the format, payload schema,
+canonicalization rules, canonicalization identifier
+`genlayer-scout-json-sorted-keys-v1`, and the declared `algorithm: "sha256"` are
+all unchanged. Only the implementation was brought into conformance with the
+protocol it already declared.
+
+v0.3.0 shipped a hand-rolled SHA-256 whose message-length padding wrote the
+64-bit bit length into the wrong bytes of the final block. It happened to
+produce the correct digest for the empty string only; every non-empty payload
+produced a non-standard value. Because those digests were still self-consistent,
+the v0.3.0 test suite did not detect it. The practical effect was limited to
+digest interoperability: v0.3.0 digests did not match standard SHA-256
+implementations such as `openssl`, `sha256sum`, Python `hashlib`, or
+`ScoutEvidenceAnchor`. This was a correctness defect in an integrity mechanism,
+not a breach of confidentiality, and there is no evidence of tampering.
+
+Migration: regenerate manifests with v0.3.1 before relying on digest
+verification. A v0.3.0 manifest inspected by v0.3.1 will report **Modified**,
+because its recorded digest is not the standard SHA-256 of its payload. v0.3.1
+does not accept both values under `algorithm: "sha256"`, and does not attempt to
+reinterpret or migrate existing digests.
+
+v0.3.1 digests are standard SHA-256 and are independently reproducible with
+Node `crypto`, Python `hashlib`, and the `ScoutEvidenceAnchor` contract. The
+digests are now computed with the platform Web Crypto implementation rather
+than a hand-written compression function.
 
 A verifier should check the format, payload version, algorithm, and canonicalization identifiers, canonicalize `payload` using these rules, compute SHA-256, and compare the result exactly with `integrity.digest`. A mismatch means the manifest payload or its declared protocol metadata should not be trusted as unchanged.
 
@@ -84,6 +115,8 @@ The SHA-256 digest makes the manifest tamper-evident: any modification to the pa
 ## Public API
 
 The current core exposes `createEvidenceManifestV1` to build an envelope, `canonicalizeEvidenceManifestJson` and `digestEvidenceManifestPayload` for independent tooling, `verifyEvidenceManifestIntegrity` for an in-process check, `validateEvidenceManifestV1` for structural validation, and `inspectEvidenceManifestV1` for combined format/integrity/validation inspection. It performs no storage, network, signing, wallet, or UI work.
+
+As of v0.3.1, `createEvidenceManifestV1`, `digestEvidenceManifestPayload`, `verifyEvidenceManifestIntegrity`, and `inspectEvidenceManifestV1` are asynchronous and return promises, because Web Crypto's `subtle.digest` is async. `canonicalizeEvidenceManifestJson` and `validateEvidenceManifestV1` remain synchronous. Callers must `await` these functions.
 
 ## Generation and download
 

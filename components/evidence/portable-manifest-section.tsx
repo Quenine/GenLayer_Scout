@@ -74,7 +74,7 @@ export function PortableManifestSection({
 
   const canGenerate = prerequisites.length === 0;
 
-  const generate = useCallback(() => {
+  const generate = useCallback(async () => {
     if (!canGenerate) return;
     setErrors([]);
     setManifest(null);
@@ -89,7 +89,7 @@ export function PortableManifestSection({
         deploymentUrl: implRefs.deploymentUrl,
         createdAt: new Date().toISOString()
       });
-      const envelope = createEvidenceManifestV1(input);
+      const envelope = await createEvidenceManifestV1(input);
       setManifest(envelope);
     } catch (err) {
       setErrors([

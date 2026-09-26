@@ -71,7 +71,9 @@ export function canonicalizeEvidenceManifestJson(value: unknown): string {
   return canonicalizeJsonValue(value, new Set());
 }
 
-export function digestEvidenceManifestPayload(payload: EvidenceManifestPayloadV1): string {
+export async function digestEvidenceManifestPayload(
+  payload: EvidenceManifestPayloadV1
+): Promise<string> {
   return sha256Hex(canonicalizeEvidenceManifestJson(payload));
 }
 
@@ -138,7 +140,7 @@ export function buildEvidenceManifestPayloadV1({
   };
 }
 
-export function createEvidenceManifestV1(input: {
+export async function createEvidenceManifestV1(input: {
   evidencePack: EvidencePack;
   contributionLane?: ContributionLane;
   experiment?: ContractExperiment;
@@ -148,25 +150,29 @@ export function createEvidenceManifestV1(input: {
     deploymentUrl: string;
   };
   createdAt?: string;
-}): EvidenceManifestEnvelopeV1 {
+}): Promise<EvidenceManifestEnvelopeV1> {
   const payload = buildEvidenceManifestPayloadV1(input);
+  const digest = await digestEvidenceManifestPayload(payload);
   return {
     format: EVIDENCE_MANIFEST_FORMAT,
     payload,
     integrity: {
       algorithm: EVIDENCE_MANIFEST_DIGEST_ALGORITHM,
       canonicalization: EVIDENCE_MANIFEST_CANONICALIZATION,
-      digest: digestEvidenceManifestPayload(payload)
+      digest
     }
   };
 }
 
-export function verifyEvidenceManifestIntegrity(envelope: EvidenceManifestEnvelopeV1): boolean {
-  return envelope.format === EVIDENCE_MANIFEST_FORMAT &&
-    envelope.payload.version === EVIDENCE_MANIFEST_VERSION &&
-    envelope.integrity.algorithm === EVIDENCE_MANIFEST_DIGEST_ALGORITHM &&
-    envelope.integrity.canonicalization === EVIDENCE_MANIFEST_CANONICALIZATION &&
-    envelope.integrity.digest === digestEvidenceManifestPayload(envelope.payload);
+export async function verifyEvidenceManifestIntegrity(
+  envelope: EvidenceManifestEnvelopeV1
+): Promise<boolean> {
+  if (envelope.format !== EVIDENCE_MANIFEST_FORMAT) return false;
+  if (envelope.payload.version !== EVIDENCE_MANIFEST_VERSION) return false;
+  if (envelope.integrity.algorithm !== EVIDENCE_MANIFEST_DIGEST_ALGORITHM) return false;
+  if (envelope.integrity.canonicalization !== EVIDENCE_MANIFEST_CANONICALIZATION) return false;
+
+  return envelope.integrity.digest === (await digestEvidenceManifestPayload(envelope.payload));
 }
 
 function isHttpsUrl(value: string): boolean {
@@ -405,9 +411,9 @@ export interface ManifestInspectionResult {
   errors: string[];
 }
 
-export function inspectEvidenceManifestV1(
+export async function inspectEvidenceManifestV1(
   envelope: EvidenceManifestEnvelopeV1
-): ManifestInspectionResult {
+): Promise<ManifestInspectionResult> {
   if (envelope.format !== EVIDENCE_MANIFEST_FORMAT) {
     return {
       status: "invalid",
@@ -449,7 +455,7 @@ export function inspectEvidenceManifestV1(
   }
 
   const validation = validateEvidenceManifestV1(envelope);
-  const computedDigest = digestEvidenceManifestPayload(envelope.payload);
+  const computedDigest = await digestEvidenceManifestPayload(envelope.payload);
   const digestMatches = computedDigest === envelope.integrity.digest;
 
   if (!validation.valid) {

@@ -120,7 +120,7 @@ export function InspectManifestSection() {
 
     let result: ManifestInspectionResult;
     try {
-      result = inspectEvidenceManifestV1(parsed.envelope);
+      result = await inspectEvidenceManifestV1(parsed.envelope);
     } catch {
       setLoad({
         phase: "error",
