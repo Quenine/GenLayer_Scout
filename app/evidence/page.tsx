@@ -5,6 +5,7 @@ import { EvidencePackForm } from "@/components/evidence/evidence-pack-form";
 import { EvidencePackPreview } from "@/components/evidence/evidence-pack-preview";
 import { EvidenceReadinessChecklist } from "@/components/evidence/evidence-readiness-checklist";
 import { InspectManifestSection } from "@/components/evidence/inspect-manifest-section";
+import { OnchainEvidenceSection } from "@/components/evidence/onchain-evidence-section";
 import { PortableManifestSection } from "@/components/evidence/portable-manifest-section";
 import { PageHeader } from "@/components/page-header";
 import { useScout } from "@/components/scout-provider";
@@ -66,6 +67,7 @@ export default function EvidencePage() {
             experiment={selectedExperiment}
             contributionLane={selectedContributionLane}
           />
+          <OnchainEvidenceSection />
           <InspectManifestSection />
         </div>
         <EvidencePackPreview markdown={markdown} fileName={fileName} />

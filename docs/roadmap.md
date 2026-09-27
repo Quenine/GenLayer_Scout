@@ -67,6 +67,23 @@ v0.2 remains read-only. It cannot establish authorship, contract behavior, Porta
 
 v0.3 manifests are tamper-evident, not tamper-proof. A valid result does not prove authorship, ownership, or the truthfulness of linked evidence; inspection performs no current RPC verification.
 
+## v0.4 - Onchain Evidence (implemented; browser QA pending)
+
+- Read-only Evidence page section for the deployed `ScoutEvidenceAnchor` record on GenLayer Studionet (chain id `61999`, contract `0x246813806cD01d17f2995DAF9e0aCC1DaC31c488`)
+- Server-side `genlayer-js` read of `get_anchor(1)` with finalized (`latest-final`) semantics, an 8-second timeout, and no client-controlled contract, anchor id, or method
+- Fixed-target `/api/onchain-evidence` route with `no-store`/dynamic behavior and sanitized failures
+- Four explicit verdicts: matches verified reference, live record differs, not verified, read unavailable
+- Field-level difference listing for a differing record, described as a difference and never as proof of wrongdoing
+- Collapsible published reference with deployment, anchor, and consensus-verification transaction hashes, public manifest URL, expected digest, and verified explorer deep links
+- Copy and open controls for long values, responsive wrapping, accessible loading and status regions
+- Client-side re-validation of the network payload with the same pure normalizer used server-side
+- Read-only guarantee: no wallet, signing, anchor, or verify control anywhere in the module
+- Focused tests for the proven record, every mismatch class, mixed-case hex, malformed payloads, reader failure, pinned constants, and a source-level no-write-path guard
+
+Still open for v0.4: manual browser QA on a Vercel preview (loading, refresh, collapse/expand, copy, open links, and a simulated read failure) has not been performed, so release QA is not marked complete.
+
+v0.4 reports only what the contract currently records. It does not prove authorship, ownership, the truthfulness of linked evidence, or contract behavior beyond the recorded fields, and it does not establish Portal acceptance, eligibility, points, or rewards.
+
 ## Evidence Manifest v1 - deferred (not required for v0.3)
 
 - Manifest history and saved storage of inspected/generated manifests

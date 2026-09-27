@@ -215,3 +215,76 @@ consensus closures.
 
 On Windows, set `PYTHONIOENCODING=utf-8` and `PYTHONUTF8=1` when running
 `genvm-lint`, which otherwise fails on console encoding.
+
+## Hosted Studionet deployment
+
+The contract is deployed on GenLayer Studionet (chain id `61999`) at
+`0x246813806cD01d17f2995DAF9e0aCC1DaC31c488`. Anchor `1` carries the published
+v0.3.1 Evidence Manifest and has settled as `VERIFIED` with an empty reason code.
+
+| Item | Value |
+| --- | --- |
+| Network | GenLayer Studionet (chain id `61999`) |
+| RPC | `https://studio.genlayer.com/api` |
+| Contract | `0x246813806cD01d17f2995DAF9e0aCC1DaC31c488` |
+| Anchor ID | `1` |
+| Deployment tx | `0xb73260af0e5ae5b1e4729dc5017bb8241763097e812d258573cb09fb5e677412` |
+| Anchor tx | `0xf34788da4e73e1b46af966c6cdc51132f24ead45f7415da2625261c5c7e8836a` |
+| Verification tx | `0x39c0e897be9f5be5614330c028a2103eb5d2bcafa5e7c8090e6311fbd25df876` |
+| Public manifest | `https://github.com/Quenine/GenLayer_Scout/releases/download/v0.3.1/genlayer-scout-v0.3.1-evidence-manifest.json` |
+| Expected digest | `b9163889a1cf1ab99cd33ae6f3783e8a7cfcb472f7896fe0b8d464c353f8ed63` |
+| Manifest status | `finalized` |
+
+These values are pinned in `lib/scout-anchor-config.ts` and are shown to
+reviewers in the app's collapsed published-reference section.
+
+Explorer deep links use the forms below, both verified against the live
+explorer. Note that the `chains.studionet` entry exported by `genlayer-js`
+advertises a different explorer host, so the app uses its own pinned base URL
+rather than the SDK's.
+
+- Address: `https://explorer-studio.genlayer.com/address/<address>`
+- Transaction: `https://explorer-studio.genlayer.com/tx/<hash>`
+
+## Reading the anchor from the app (v0.4)
+
+v0.4 adds a read-only Onchain Evidence section to the Evidence page. It reads
+the finalized state of anchor `1` and compares it against the published
+reference above.
+
+- **Server-side read.** `app/api/onchain-evidence/route.ts` calls
+  `get_anchor(1)` through `genlayer-js` with `TransactionHashVariant.LATEST_FINAL`
+  and an 8-second timeout, so the displayed value is a settled state rather than
+  a pending or speculative one.
+- **Fixed target.** The route takes no client input. The contract address,
+  anchor id, and method are server constants, so a browser cannot redirect the
+  read at another contract or function.
+- **Server-only SDK.** `lib/scout-anchor-reader.ts` is the only module that
+  imports `genlayer-js`; the client component imports only the pure
+  configuration and comparison helpers, keeping the SDK and its transitive
+  dependencies out of the browser bundle.
+- **No caching.** The route is dynamic and responds with `no-store`, so the
+  page never presents a stale record as current.
+- **Untrusted input.** Live network data is treated as untrusted external
+  input. Every field is shape-checked by `normalizeAnchorRecord`, and the client
+  re-validates the response with the same pure normalizer, so a malformed record
+  can never render as a verified state.
+- **Comparison rules.** Digests and the manifest URL are compared exactly.
+  Addresses and transaction hashes are compared case-insensitively after
+  validating their `0x` hexadecimal form.
+- **Verdicts.** `READ_UNAVAILABLE` for a missing, failed, or malformed read;
+  `NOT_VERIFIED` for any state other than `VERIFIED`; `LIVE_RECORD_DIFFERS` when
+  a `VERIFIED` record disagrees with the reference on any compared field; and
+  `MATCHES_VERIFIED_REFERENCE` only when every compared field agrees. A
+  difference is reported as a difference, with the differing fields listed, and
+  is never described as tampering or wrongdoing.
+- **Read-only.** The module contains no wallet, signing, deployment, or
+  transaction-submission path, and this is enforced by a source-level test.
+
+`submitter` is a live-only field: it is displayed but never compared, because it
+is not part of the published reference.
+
+Manual browser QA on a Vercel preview has not yet been performed, so release QA
+for v0.4 is still open. This view reports only what the contract currently
+records; see [Trust model and limitations](#trust-model-and-limitations).
+

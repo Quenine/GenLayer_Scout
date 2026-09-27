@@ -1,6 +1,6 @@
 {
   "name": "genlayer-scout",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,7 @@
     "prepare:submission": "tsx scripts/prepare-submission.ts"
   },
   "dependencies": {
+    "genlayer-js": "1.1.8",
     "lucide-react": "^0.468.0",
     "next": "^15.1.3",
     "react": "^19.0.0",

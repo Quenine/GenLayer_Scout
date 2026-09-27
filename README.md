@@ -66,7 +66,19 @@ v0.3.1 corrects the browser SHA-256 implementation to standard SHA-256. The mani
 
 `contracts/scout_evidence_anchor.py` anchors a public Evidence Manifest v1 claim on GenLayer and settles it through validator consensus. Anchoring is deterministic and offline; `verify_anchor` refetches the manifest with GenLayer-native web access, recomputes the payload digest with a full reimplementation of the Scout canonicalizer, and requires every validator to reach the same observation before the anchor settles as `VERIFIED`, `MISMATCH`, `INVALID`, or retryable `UNAVAILABLE`. No LLM is involved in any verdict.
 
-The contract is not wired into the app UI yet; manifests are published and inspected from the browser as described above. See [ScoutEvidenceAnchor](docs/SCOUT_EVIDENCE_ANCHOR.md).
+The contract is deployed on GenLayer Studionet and read by the app as of v0.4; see [Onchain Evidence](#v04-onchain-evidence) below and [ScoutEvidenceAnchor](docs/SCOUT_EVIDENCE_ANCHOR.md).
+
+## v0.4 Onchain Evidence
+
+v0.4 surfaces the deployed `ScoutEvidenceAnchor` record as a read-only view on the Evidence page. The app reads the finalized onchain state of anchor `1` from the contract hosted at `0x246813806cD01d17f2995DAF9e0aCC1DaC31c488` on GenLayer Studionet (chain id `61999`) and compares it against the published v0.3.1 reference.
+
+- **Read-only by construction**: the page has no wallet, signing, anchor or verify controls. Scout never submits a transaction; it only reads a contract that is already deployed and settled.
+- **Server-side read**: `app/api/onchain-evidence` performs the RPC read with `genlayer-js` using finalized (`latest-final`) semantics, so the client bundle stays free of the SDK and the read target cannot be influenced by the browser.
+- **Explicit verdicts**: the result is one of **Matches verified reference**, **Live record differs**, **Not verified**, or **Read unavailable**. A differing field is listed in full and is described as a difference, never as proof of wrongdoing.
+- **Published reference**: the deployment, anchor and consensus-verification transactions, the public manifest URL, the expected digest, and explorer deep links are pinned in `lib/scout-anchor-config.ts` and shown in a collapsed reference section.
+- **Safe failure**: a failed or uninterpretable read renders **Read unavailable** and never displays a stale or hardcoded record as live evidence.
+
+Limitations: this view reports what the contract currently records. It does not prove who created the manifest, ownership, authorship, the truthfulness of linked evidence, or contract behaviour beyond the recorded fields, and it does not establish Portal acceptance, eligibility, points, or rewards. An onchain `VERIFIED` state means validators agreed that the refetched manifest reproduces the recorded digest; it is not a Scout audit. See [ScoutEvidenceAnchor](docs/SCOUT_EVIDENCE_ANCHOR.md).
 
 ## Setup
 
