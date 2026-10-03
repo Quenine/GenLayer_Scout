@@ -59,32 +59,37 @@ function str(value: unknown): string | null {
 }
 
 /**
- * Validates a raw value read from the contract into a normalized record.
+ * Validates the already-normalized, camelCase API DTO.
  *
- * Returns `null` when the shape is not what the contract is documented to
- * return, so a malformed or unexpected network payload can never reach the UI
- * as a partially-populated "VERIFIED" record.
+ * This is the *second* trust boundary. The server validates the raw contract
+ * result once with `normalizeAnchorRecord`; the browser independently
+ * re-validates the normalized JSON before rendering it, so a malformed or
+ * unexpected API payload can never be displayed as a verified record.
+ *
+ * The two shapes are deliberately not interchangeable: only
+ * `normalizeAnchorRecord` accepts snake_case contract output, and only this
+ * function accepts the camelCase DTO. Neither is loosened to accept both.
  */
-export function normalizeAnchorRecord(raw: unknown): OnchainAnchorRecord | null {
+export function normalizeOnchainAnchorApiRecord(raw: unknown): OnchainAnchorRecord | null {
   if (!isRecord(raw)) return null;
 
-  const anchorId = raw.anchor_id;
+  const anchorId = raw.anchorId;
   if (typeof anchorId !== "number" || !Number.isInteger(anchorId) || anchorId < 0) {
     return null;
   }
 
-  const claimedDigest = str(raw.claimed_digest);
-  const observedDigest = str(raw.observed_digest);
-  const manifestUrl = str(raw.manifest_url);
-  const verificationState = str(raw.verification_state);
-  const recordedStatus = str(raw.recorded_status);
-  const observedStatus = str(raw.observed_status);
+  const claimedDigest = str(raw.claimedDigest);
+  const observedDigest = str(raw.observedDigest);
+  const manifestUrl = str(raw.manifestUrl);
+  const verificationState = str(raw.verificationState);
+  const recordedStatus = str(raw.recordedStatus);
+  const observedStatus = str(raw.observedStatus);
   const submitter = str(raw.submitter);
-  const reasonCode = str(raw.reason_code);
-  const transactionHash = str(raw.transaction_hash);
-  const observedTransactionHash = str(raw.observed_transaction_hash);
-  const contractAddress = str(raw.contract_address);
-  const observedContractAddress = str(raw.observed_contract_address);
+  const reasonCode = str(raw.reasonCode);
+  const transactionHash = str(raw.transactionHash);
+  const observedTransactionHash = str(raw.observedTransactionHash);
+  const contractAddress = str(raw.contractAddress);
+  const observedContractAddress = str(raw.observedContractAddress);
 
   if (
     claimedDigest === null ||
@@ -103,13 +108,16 @@ export function normalizeAnchorRecord(raw: unknown): OnchainAnchorRecord | null 
     return null;
   }
 
-  // Hex-shaped fields must actually look like hex, and hashes/addresses must
-  // have the right width, otherwise a truncated or wrong field would silently
-  // be reported as a plain reference mismatch.
+  // Hex-shaped fields must actually look like hex, and digests, hashes and
+  // addresses must have the right width, otherwise a truncated or wrong field
+  // would silently be reported as a plain reference mismatch. Nothing here is
+  // coerced: an unexpected value is rejected rather than repaired.
   if (!DIGEST.test(claimedDigest) || !DIGEST.test(observedDigest)) return null;
   if (!TX_HASH.test(transactionHash) || !TX_HASH.test(observedTransactionHash)) return null;
   if (!ADDRESS.test(contractAddress) || !ADDRESS.test(observedContractAddress)) return null;
-  if (!HEX_LITERAL.test(submitter)) return null;
+  // `submitter` is a contract account address, so it is held to address width
+  // rather than a generic `0x` hexadecimal literal.
+  if (!ADDRESS.test(submitter)) return null;
   if (verificationState.length === 0 || manifestUrl.length === 0) return null;
 
   return {
@@ -127,6 +135,42 @@ export function normalizeAnchorRecord(raw: unknown): OnchainAnchorRecord | null 
     transactionHash,
     verificationState
   };
+}
+
+/**
+ * Validates a raw value read from the contract into a normalized record.
+ *
+ * This is the *first* trust boundary and runs once, server-side, over the
+ * snake_case payload the contract documents. The documented snake_case output is
+ * mapped onto the normalized DTO shape and then held to exactly the same
+ * substantive rules as the API boundary, so the two cannot drift apart.
+ *
+ * Returns `null` when the shape is not what the contract is documented to
+ * return, so a malformed or unexpected network payload can never reach the UI
+ * as a partially-populated "VERIFIED" record. CamelCase API data is *not*
+ * accepted here.
+ */
+export function normalizeAnchorRecord(raw: unknown): OnchainAnchorRecord | null {
+  if (!isRecord(raw)) return null;
+
+  const anchorId = raw.anchor_id;
+  if (typeof anchorId !== "number") return null;
+
+  return normalizeOnchainAnchorApiRecord({
+    anchorId,
+    claimedDigest: str(raw.claimed_digest),
+    contractAddress: str(raw.contract_address),
+    manifestUrl: str(raw.manifest_url),
+    observedContractAddress: str(raw.observed_contract_address),
+    observedDigest: str(raw.observed_digest),
+    observedStatus: str(raw.observed_status),
+    observedTransactionHash: str(raw.observed_transaction_hash),
+    reasonCode: str(raw.reason_code),
+    recordedStatus: str(raw.recorded_status),
+    submitter: str(raw.submitter),
+    transactionHash: str(raw.transaction_hash),
+    verificationState: str(raw.verification_state)
+  });
 }
 
 /**

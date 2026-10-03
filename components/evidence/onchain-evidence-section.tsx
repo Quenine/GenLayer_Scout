@@ -32,7 +32,7 @@ import {
   LIVE_FIELD_ORDER,
   TRUST_BOUNDARY_NOTES,
   compareAnchorToReference,
-  normalizeAnchorRecord,
+  normalizeOnchainAnchorApiRecord,
   presentVerdict,
   type OnchainAnchorRecord,
   type OnchainEvidenceVerdict,
@@ -178,10 +178,11 @@ export function OnchainEvidenceSection() {
         readError?: string | null;
       };
 
-      // Re-validate the network payload on the client with the same pure
-      // normalizer the server uses, so a malformed record can never be
-      // rendered as a verified state.
-      const record = normalizeAnchorRecord(body.record ?? null);
+      // Independently re-validate the API payload in the browser. The response
+      // is already the normalized camelCase DTO, so it must be checked with the
+      // API DTO validator, not the raw snake_case contract normalizer. A
+      // malformed record can never be rendered as a verified state.
+      const record = normalizeOnchainAnchorApiRecord(body.record ?? null);
       const comparison = compareAnchorToReference(record);
 
       setOutcome({
